@@ -38,6 +38,7 @@ const myModule = (() => {
         console.log("adduser")
         let form = querySelect('#form')
         form.className = 'd-block'
+        querySelect('#open').click();
     }
 //----------------------------
     const cancel = function () {
