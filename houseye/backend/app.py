@@ -1,3 +1,4 @@
+import io
 import json
 
 import firebase_admin
@@ -10,7 +11,8 @@ import consts as C
 from firebase_admin import credentials
 from firebase_admin import firestore
 from firebase_admin import storage
-
+from PIL import Image
+from  io import StringIO
 
 cred = credentials.Certificate("./ServiceAccountKey.json")
 firebase_admin.initialize_app(cred, {
@@ -19,7 +21,6 @@ firebase_admin.initialize_app(cred, {
 
 db = firestore.client()
 bucket = storage.bucket()
-
 
 app = Flask(__name__)
 CORS(app)
@@ -45,10 +46,11 @@ def handle_form():
         from werkzeug.datastructures import ImmutableMultiDict
         received_data = request.get_json
         print(f"received data: {received_data}")
-        message = received_data[C.USERNAME]
+        user = received_data[C.USERNAME]
+        img = received_data[C.IMAGE]
         return_data = {
-            "status": "success",
-            "message": f"received: {message}"
+            "user": f"{user}",
+            # "image": f"{img}"
         }
 
         data.my_users["usernames"].append(received_data[C.USERNAME])
@@ -60,6 +62,10 @@ def handle_form():
         temp_df = pd.DataFrame(columns=[C.USERNAME, C.IMAGE])
         temp_df.at[len(data.df_users.index), C.USERNAME] = received_data[C.USERNAME]
         temp_df.at[len(data.df_users.index), C.IMAGE] = received_data[C.IMAGE]
+
+        # picture = Image.open(io.BytesIO(img))
+        # picture = picture.save("/resources/d.jpg")
+        # picture.show()
 
         data.df_users = pd.concat([data.df_users, temp_df], ignore_index=True)
 

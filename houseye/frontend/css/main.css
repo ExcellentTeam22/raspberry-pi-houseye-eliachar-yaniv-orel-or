@@ -2413,6 +2413,11 @@ form .error {
 }
 
 
-
+#display-image {
+    width: 375px;
+    height: 211px;
+    background-position: center;
+    background-size: cover;
+}
 
 /*}*/
