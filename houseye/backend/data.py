@@ -1,7 +1,8 @@
 import pandas as pd
 import consts as C
 
-my_users = {"usernames": ["Eliachar", "Yaniv", "Orel", "Or"]}
+my_users = {"usernames": ["Eliachar", "Yaniv", "Orel", "Or"],
+            "images": []}
 
 df_users = pd.DataFrame(columns=[C.USERNAME, C.IMAGE])
 

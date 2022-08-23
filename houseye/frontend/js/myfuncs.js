@@ -42,12 +42,16 @@ const myModule = (() => {
         let username = querySelect('#username').value.trim()
         console.log(username)
 
+        let image = querySelect('#img').value
+        console.log(image)
+
         console.log("Sending data: " + username);
         xhr = getXmlHttpRequestObject();
         xhr.onreadystatechange = sendDataCallback;
         xhr.open("POST", "http://127.0.0.1:5000/form", true);
         xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-        xhr.send(JSON.stringify({"username": username}));
+        xhr.send(JSON.stringify({"username": username,
+                                       "image": image}));
 
     }
 

@@ -37,12 +37,14 @@ def handle_form():
         }
 
         data.my_users["usernames"].append(received_data[C.USERNAME])
+        data.my_users["images"].append(received_data[C.IMAGE])
 
         print(data.my_users)
+        print(len(data.df_users.index))
 
         temp_df = pd.DataFrame(columns=[C.USERNAME, C.IMAGE])
-        temp_df.at[0, C.USERNAME] = received_data[C.USERNAME]
-        # temp_df.at[1, C.IMAGE] = received_data[C.IMAGE]
+        temp_df.at[len(data.df_users.index), C.USERNAME] = received_data[C.USERNAME]
+        temp_df.at[len(data.df_users.index), C.IMAGE] = received_data[C.IMAGE]
 
         data.df_users = pd.concat([data.df_users, temp_df], ignore_index=True)
 
