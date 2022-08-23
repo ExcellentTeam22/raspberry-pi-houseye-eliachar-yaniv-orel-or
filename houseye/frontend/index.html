@@ -26,7 +26,7 @@
 <div class="text-center">
     <nav class="navbar navbar-expand-xl navbar-dark bg-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">HomeFace</a>
+            <a class="navbar-brand" href="#">HomeEye</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
                     aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -151,7 +151,7 @@
                                 <input type="text" name="username" id="username"
                                        class="form-control myborder myinput mb-2 mt-2"
                                        aria-describedby="usernameHelp" placeholder="Enter your name here">
-                                <!--                                    <div class="text-danger errormessage"><%= emailError %></div>-->
+                                <!--              <div class="text-danger errormessage"><%= emailError %></div>-->
                             </div>
 
                             <div class="form-group">
@@ -161,37 +161,41 @@
                                     <span class="spinner-grow spinner-grow-sm bg-primary" role="status"
                                           aria-hidden="true"></span>
 
-{#                                    <form action="/form">#}
-                                        <label for="img">Select image:</label>
-                                        <input  class=" btn btn-block mybtn btn-primary w-100 button style"
-                                                type="file" id="img" name="img" accept="image/*">
-{#                                        <input type="submit">#}
-{#                                    </form>#}
+                                    <form action="/">
+                                        <label for="img" class="text-dark">Select image:</label>
+                                        <input class="text-dark" type="file" id="img" name="img" accept="image/*">
+                                        <!--      <input type="submit">-->
+                                    </form>
 
+                                    <!--       <input type="file" class="text-dark" id="img" name="img" accept="image/*">-->
                                 </div>
-                                <div class="col-md-12 ">
-                                    <div class="login-or ">
-                                        <hr class="hr-or">
-                                        <span class="span-or">or</span>
-                                    </div>
-                                </div>
+
+                                <!--      <div class="col-md-12 ">
+                                  <div class="login-or ">
+                                      <hr class="hr-or">
+                                      <span class="span-or">or</span>
+                                  </div>
+                              </div>-->
                             </div>
 
-                            <div class="form-group">
-                                <p class="text-center text-dark"><i>Do you want to register?</i></p>
-                            </div>
+                            <!--   <div class="form-group">
+                              <p class="text-center text-dark"><i>Do you want to register?</i></p>
+                          </div>-->
                             <div class="col-md-12 mb-3">
                                 <p class="text-center text-dark">
                                     <input type="submit" name="register" id="register" value="Register"
                                            class="btn btn-secondary btn-block mybtn text-center w-100">
                                 </p>
                                 <p class="text-dark" id="sent-data-container"></p>
+
                             </div>
                             <div class="col-md-12 mb-3">
                                 <p class="text-center text-dark">
                                     <a href="#" id="cancel"
                                        class="signupBtn btn btn-outline-danger btn-block mybtn text-center w-100">Cancel</a>
                                 </p>
+
+                                <div id="display-image"></div>
                             </div>
                         </form>
                     </div>

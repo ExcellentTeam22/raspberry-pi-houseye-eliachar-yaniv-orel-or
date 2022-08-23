@@ -1,6 +1,6 @@
 "use strict";
 
-const USERNAME = 'username';
+var uploaded_image = ""
 
 document.addEventListener('DOMContentLoaded', function () {
     myModule.querySelect("#scanbtn").addEventListener("click", myModule.scan);
@@ -8,6 +8,17 @@ document.addEventListener('DOMContentLoaded', function () {
     myModule.querySelect("#cancel").addEventListener("click", myModule.cancel);
     // myModule.querySelect("#users").addEventListener("click", myModule.getUsers);
     myModule.querySelect("#register").addEventListener("click", myModule.register);
+
+    myModule.querySelect("#img").addEventListener("change", function () {
+
+        const reader = new FileReader()
+        reader.addEventListener("load", () => {
+            uploaded_image = reader.result
+            myModule.querySelect('#display-image').style.backgroundImage = `url(${uploaded_image})`
+
+        });
+        reader.readAsDataURL(this.files[0])
+    })
     // myModule.querySelect('#clearBtn').addEventListener('click', function () {
     //     myModule.querySelect("#myForm").reset();
     //     myModule.resetErrors();
@@ -42,25 +53,31 @@ const myModule = (() => {
         let username = querySelect('#username').value.trim()
         console.log(username)
 
-        let image = querySelect('#img').value
-        console.log(image)
+        let image = querySelect('#img')
+        console.log(image.value)
+        // image = image.value
 
-        console.log("Sending data: " + username);
+        image = `url(${uploaded_image})`
+        // image = uploaded_image
+
+        console.log("Sending data: " + username + " + " + image);
         xhr = getXmlHttpRequestObject();
         xhr.onreadystatechange = sendDataCallback;
         xhr.open("POST", "http://127.0.0.1:5000/form", true);
         xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-        xhr.send(JSON.stringify({"username": username,
-                                       "image": image}));
+        xhr.send(JSON.stringify({
+            "username": username,
+            "image": image
+        }));
+
+        uploaded_image = ""
 
     }
 
-     function sendDataCallback() {
-        // Check response is ready or not
+    function sendDataCallback() {
         if (xhr.readyState == 4 && xhr.status == 201) {
             console.log("Data creation response received!");
             let dataDiv = document.getElementById('sent-data-container');
-            // Set current data text
             dataDiv.innerHTML = xhr.responseText;
         }
     }
@@ -118,8 +135,6 @@ const myModule = (() => {
         querySelect('#imagesOutput3').innerHTML = '';
         querySelect('#warning').className = "row-fluid d-none";
     }
-
-
 
 
     var xhr = null;
