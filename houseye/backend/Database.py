@@ -29,7 +29,7 @@ class Database:
         """
         try:
             if not self.db.collection('Users').where('username', '==', user_name).get():
-                self.db.collection('Users').add({'username': user_name, 'image': image_path})
+                self.db.collection('Users').add({'username': user_name, 'image': image_path, 'status': 'out'})
             else:
                 return "User is already inside"
         except Exception as e:
@@ -106,3 +106,20 @@ class Database:
         except Exception as e:
             return e.args
         return doc
+
+    def get_images(self):
+        try:
+            files = self.bucket.list_blobs()
+        except Exception as e:
+            return e.args
+        return files
+
+    def update_user(self, **kwargs):
+        try:
+            query_ref = self.db.collection('Users').where('username', '==', kwargs['username']).get()
+            for doc in query_ref:
+                doc_id = doc.id
+                self.db.collection("Users").document(doc_id).set(kwargs)
+        except Exception as e:
+            return e.args
+        return "Updated successfully"

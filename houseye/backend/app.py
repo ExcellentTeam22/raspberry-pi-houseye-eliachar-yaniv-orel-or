@@ -11,6 +11,9 @@ from PIL import Image
 from  io import StringIO
 from Database import Database as db
 
+
+db().update_user(username='YanivSonino', status='out')
+
 app = Flask(__name__)
 CORS(app)
 
