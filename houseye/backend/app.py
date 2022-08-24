@@ -1,26 +1,15 @@
 import io
 import json
 
-import firebase_admin
 import flask
 from flask import Flask, request
 import data as data
 from flask_cors import CORS
 import pandas as pd
 import consts as C
-from firebase_admin import credentials
-from firebase_admin import firestore
-from firebase_admin import storage
 from PIL import Image
 from  io import StringIO
-
-cred = credentials.Certificate("./ServiceAccountKey.json")
-firebase_admin.initialize_app(cred, {
-    'storageBucket': 'gs://houseeye-ea111.appspot.com'
-})
-
-db = firestore.client()
-bucket = storage.bucket()
+from Database import Database as db
 
 app = Flask(__name__)
 CORS(app)
@@ -43,8 +32,7 @@ def handle_form():
     print("form...")
 
     if request.method == "POST":
-        from werkzeug.datastructures import ImmutableMultiDict
-        received_data = request.get_json
+        received_data = request.get_json()
         print(f"received data: {received_data}")
         user = received_data[C.USERNAME]
         img = received_data[C.IMAGE]
@@ -69,9 +57,6 @@ def handle_form():
 
         data.df_users = pd.concat([data.df_users, temp_df], ignore_index=True)
 
-        db.collection('Users').add({'username': received_data[C.USERNAME], 'image': received_data[C.IMAGE]})
-        blob = bucket.blob(received_data[C.IMAGE])
-        blob.upload_from_filename(received_data[C.IMAGE])
         return flask.Response(response=json.dumps(return_data), status=201)
 
 
