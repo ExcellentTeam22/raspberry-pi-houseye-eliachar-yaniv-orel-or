@@ -6,10 +6,9 @@ document.addEventListener('DOMContentLoaded', function () {
     myModule.querySelect("#scanbtn").addEventListener("click", myModule.scan);
     myModule.querySelect("#adduser").addEventListener("click", myModule.adduser);
     myModule.querySelect("#cancel").addEventListener("click", myModule.cancel);
-    // myModule.querySelect("#users").addEventListener("click", myModule.getUsers);
     myModule.querySelect("#register").addEventListener("click", myModule.register);
 
-    myModule.querySelect("#img").addEventListener("change", function () {
+    myModule.querySelect("#image").addEventListener("change", function () {
 
         const reader = new FileReader()
         reader.addEventListener("load", () => {
@@ -18,12 +17,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         });
         reader.readAsDataURL(this.files[0])
-    })
-    // myModule.querySelect('#clearBtn').addEventListener('click', function () {
-    //     myModule.querySelect("#myForm").reset();
-    //     myModule.resetErrors();
-    //     myModule.clearOutput();
-    // });
+
+    });
 
 }, false);
 
@@ -47,40 +42,17 @@ const myModule = (() => {
         form.className = 'd-none'
     }
     //------------------------------
-    const register = function (event) {
+    const register = async function (event) {
         console.log("register")
         event.preventDefault()
         let form = querySelect('#formPost')
-        let username = querySelect('#username').value.trim()
-        console.log(username)
 
-        let image = querySelect('#img')
-        console.log(image.value)
-        // image = image.value
-
-        image = `url(${uploaded_image})`
-        // image = uploaded_image
-
-        console.log("Sending data: " + username + " + " + image);
-        xhr = getXmlHttpRequestObject();
-        xhr.onreadystatechange = sendDataCallback;
-        xhr.open("POST", "http://127.0.0.1:5000/form", true);
-        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-        xhr.send(JSON.stringify({
-            "username": username,
-            "image": image
-        }));
-
-        uploaded_image = ""
-
-    }
-
-    function sendDataCallback() {
-        if (xhr.readyState == 4 && xhr.status == 201) {
-            console.log("Data creation response received!");
-            let dataDiv = document.getElementById('sent-data-container');
-            dataDiv.innerHTML = xhr.responseText;
-        }
+        const resp = await fetch("http://127.0.0.1:5000/form", {
+            method: "POST",
+            body: new FormData(form)
+        });
+        const body = await resp.json();
+        console.log(body)
     }
 
     /** for more readable syntax
@@ -313,3 +285,19 @@ const classesModule = (() => {
 
 /*if (v3 && !validateInput(cam, isCameraExistToMission))
     v = false;*/
+
+
+        // image = image.value
+
+        // image = `url(${uploaded_image})`
+        // image = uploaded_image
+
+        // console.log("Sending data: " + username + " + " + image);
+        // xhr = getXmlHttpRequestObject();
+        // xhr.onreadystatechange = sendDataCallback;
+        // xhr.open("POST", "http://127.0.0.1:5000/form", true);
+        // xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        // xhr.send(JSON.stringify({
+        //     "username": username,
+        //     "image": image
+        // }));
