@@ -2,6 +2,7 @@
 
 USERNAME = 'username'
 IMAGE = 'image'
-PATH_TO_SAVE_IMAGE = 'backend/resources/image.png'
+IMAGE_PATH = 'image_path'
+BASE_PATH_TO_SAVE_IMAGE = 'backend/resources/'
 POST = "POST"
 GET = "GET"

@@ -12,7 +12,7 @@ This class represents a DataBase that holds all the information about coins that
 @singleton
 class Database:
     def __init__(self):
-        self.cred = credentials.Certificate("./ServiceAccountKey.json")
+        self.cred = credentials.Certificate("backend/ServiceAccountKey.json")
         firebase_admin.initialize_app(self.cred, {
             'storageBucket': 'houseeye-ea111.appspot.com'
         })
@@ -20,7 +20,7 @@ class Database:
         self.db = firestore.client()
         self.bucket = storage.bucket()
 
-    def add_user(self,user_name, image_path):
+    def add_user(self, user_name, image_path):
         """
         Add new user to database.
         :param user_name: The username of the user
@@ -36,7 +36,7 @@ class Database:
             return e.args
         return "Successfully Added"
 
-    def delete_user(self, user_name,image_path):
+    def delete_user(self, user_name, image_path):
         """
         Delete user from database.
         :param user_name: The user name you want to delete

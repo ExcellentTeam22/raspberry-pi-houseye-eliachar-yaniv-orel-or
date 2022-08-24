@@ -1,10 +1,8 @@
 import pandas as pd
 import consts as C
 
-my_users = {"usernames": ["Eliachar", "Yaniv", "Orel", "Or"],
-            "images": []}
-
-df_users = pd.DataFrame(columns=[C.USERNAME, C.IMAGE])
+pd.set_option('display.max_columns', None, 'display.max_rows', None)
+df_users = pd.DataFrame(columns=[C.USERNAME, C.IMAGE_PATH, C.IMAGE])
 
 
 def create_data_frame(df_path: str):

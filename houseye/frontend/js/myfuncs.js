@@ -8,6 +8,9 @@ document.addEventListener('DOMContentLoaded', function () {
     myModule.querySelect("#cancel").addEventListener("click", myModule.cancel);
     myModule.querySelect("#register").addEventListener("click", myModule.register);
 
+    myModule.querySelect("#show-users-btn").addEventListener("click", myModule.show_users);
+    myModule.querySelect("#back").addEventListener("click", myModule.back);
+
     myModule.querySelect("#image").addEventListener("change", function () {
 
         const reader = new FileReader()
@@ -54,6 +57,75 @@ const myModule = (() => {
         const body = await resp.json();
         console.log(body)
     }
+    //----------------------------
+    const show_users = async function () {
+        querySelect('#main-page').className = "d-none";
+        querySelect('#users-show').className = "d-block";
+
+        let result_div = querySelect('#result')
+
+        const resp = await fetch("http://127.0.0.1:5000/get_all_users", {
+            method: "POST",
+        });
+        const body = await resp.json();
+        console.log(body)
+
+        result_div.innerHTML = '';
+
+        body.forEach(user => {
+            console.log(user.username)
+            appendCardToHtml(result_div, createDiv(user.username, user.image, user.status))
+
+        });
+
+
+    }
+
+    const createDiv = (username, image_path, status) => {
+        return `
+            <div>
+               <div class="card border border-5 rounded-3 mb-2 left-text-align" style="width: 27.5rem;">
+       
+                 <div class="card-body">
+                    <h3 class="card-text">${username} is ${status}</h3>
+                         
+                  </div>
+                </div>
+            </div>`;
+    }
+    /** @returns {string} - return a div that includes a card with an image and its details */
+        // const createDiv = () => {
+        //     return `
+        //     <div>
+        //        <div class="card  border border-5 rounded-3  mb-2" style="width: 18rem;">
+        //         <img src=${this.image_src} class="card-img-top" alt="...">
+        //          <div class="card-body">
+        //             <p class="card-text">${this.id}</p>
+        //             <p class="card-text">Earth date: ${this.date}</p>
+        //             <p class="card-text">Sol: ${this.sol}</p>
+        //             <p class="card-text">Camera: ${this.camera}</p>
+        //             <p class="card-text">Mission: ${this.mission}</p>
+        //             <button class="btn btn-info ml-2 mr-2">Save</button>
+        //             <a href=${this.image_src} target="_blank">
+        //                <button class="btn btn-primary ml-2 mr-2">Full size</button>
+        //             </a>
+        //           </div>
+        //         </div>
+        //     </div>`;
+        // }
+        //----------------------------------
+    const appendCardToHtml = (where, div) => {
+            where.insertAdjacentHTML('beforeend', div);
+        }
+
+    //----------------------------
+    const back = function () {
+
+        querySelect('#main-page').className = "d-block";
+        querySelect('#users-show').className = "d-none";
+
+    }
+
 
     /** for more readable syntax
      * @param container - get an #id
@@ -142,6 +214,8 @@ const myModule = (() => {
         adduser: adduser,
         cancel: cancel,
         getUsers: getUsers,
+        show_users: show_users,
+        back: back,
         register: register,
         querySelect: querySelect,
         setAttr: setAttr,
@@ -287,17 +361,17 @@ const classesModule = (() => {
     v = false;*/
 
 
-        // image = image.value
+// image = image.value
 
-        // image = `url(${uploaded_image})`
-        // image = uploaded_image
+// image = `url(${uploaded_image})`
+// image = uploaded_image
 
-        // console.log("Sending data: " + username + " + " + image);
-        // xhr = getXmlHttpRequestObject();
-        // xhr.onreadystatechange = sendDataCallback;
-        // xhr.open("POST", "http://127.0.0.1:5000/form", true);
-        // xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-        // xhr.send(JSON.stringify({
-        //     "username": username,
-        //     "image": image
-        // }));
+// console.log("Sending data: " + username + " + " + image);
+// xhr = getXmlHttpRequestObject();
+// xhr.onreadystatechange = sendDataCallback;
+// xhr.open("POST", "http://127.0.0.1:5000/form", true);
+// xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+// xhr.send(JSON.stringify({
+//     "username": username,
+//     "image": image
+// }));
