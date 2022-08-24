@@ -123,3 +123,8 @@ class Database:
         except Exception as e:
             return e.args
         return "Updated successfully"
+
+    def get_all_users(self):
+        query = self.db.collection('Users').get()
+        users_details = [user.to_dict() for user in query]
+        return users_details

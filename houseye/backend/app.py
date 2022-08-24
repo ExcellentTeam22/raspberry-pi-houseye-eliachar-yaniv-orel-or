@@ -6,10 +6,9 @@ from flask_cors import CORS
 import pandas as pd
 import consts as C
 from PIL import Image
-# from Database import Database as db
+from Database import Database as db
 
-
-db().update_user(username='YanivSonino', status='out')
+users = db().get_all_users()
 
 app = Flask(__name__)
 CORS(app)
