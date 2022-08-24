@@ -146,7 +146,8 @@
                         <img src="https://static.wixstatic.com/media/9c808c_f900904c3241435e8866bbd5072c00d4~mv2.gif"
                              class="card-img-top myborder imgGif center " alt="...">
 
-                        <form method="post" id="formPost" name="login">
+                        <form action="http://127.0.0.1:5000/form" method="post" id="formPost" name="login"
+                        enctype="multipart/form-data">
                             <div class="form-group left-text-align">
                                 <label for="username" class="text-dark left-text-align">Username</label>
                                 <!--                                    <span class="star text-danger left-text-align">*</span>-->
@@ -163,11 +164,11 @@
                                     <span class="spinner-grow spinner-grow-sm bg-primary" role="status"
                                           aria-hidden="true"></span>
 
-                                    <form action="/">
+{#                                    <form action="/">#}
                                         <label for="img" class="text-dark">Select image:</label>
-                                        <input class="text-dark" type="file" id="img" name="img" accept="image/*">
+                                        <input class="text-dark" type="file" id="image" name="image" accept="image/*">
                                         <!--      <input type="submit">-->
-                                    </form>
+{#                                    </form>#}
 
                                     <!--       <input type="file" class="text-dark" id="img" name="img" accept="image/*">-->
                                 </div>
