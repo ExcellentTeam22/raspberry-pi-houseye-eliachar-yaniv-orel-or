@@ -4,6 +4,7 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
 from firebase_admin import storage
+
 """
 This class represents a DataBase that holds all the information about coins that founds by the program.
 """
@@ -128,3 +129,30 @@ class Database:
         query = self.db.collection('Users').get()
         users_details = [user.to_dict() for user in query]
         return users_details
+
+    def create_chat(self, sender, receiver):
+        chat_ref = self.db.collection('Chats').add({'contacts': {'user_1': sender, 'user_2': receiver}})
+        self.db.collection('Users').where('username', '==', sender).collection('chats').document(chat_ref.id) \
+            .add({'last_message': '',
+                  'created_time': '00:00'})
+        self.db.collection('Users').where('username', '==', receiver).collection('chats').document(chat_ref.id) \
+            .add({'last_message': '',
+                  'created_time': '00:00'})
+
+    def send_message(self, sender, receiver, message):
+        chat_ref = self.db.collection('Chats').where('contacts', '==', {'user_1': sender, 'user_2': receiver})
+
+        chat_ref.collection('conversation').add({'message': message,
+                                                 'sender': sender,
+                                                 'receiver': receiver,
+                                                 'date': '00:00'})
+        self.db.collection('Users').where('username', '==', sender).collection('chats').document(chat_ref.id) \
+            .set({'last_message': message})
+        self.db.collection('Users').where('username', '==', receiver).collection('chats').document(chat_ref.id) \
+            .set({'last_message': message})
+
+    def load_chat(self, user1, user2):
+        chat_ref = self.db.collection('Chats').where('contacts', '==', {'user_1': user1, 'user_2': user2})
+        chat_messages = [user.to_dict() for user in chat_ref]
+        return chat_messages
+
