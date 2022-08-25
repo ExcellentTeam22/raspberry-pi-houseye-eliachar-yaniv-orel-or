@@ -26,6 +26,7 @@ def users():
 
 def add_user_to_cloud_db(username: str, image_path: str):
     db().add_user(username, image_path)
+    db().add_image(image_path)
 
 
 def insert_to_dataframe(received_data, image_path):
@@ -103,18 +104,44 @@ def message():
     if request.method == C.POST:
         print("message...")
 
-        sender, receiver, message = request.form[C.SENDER], request.form[C.RECEIVER], request.form[C.MESSAGE]
+        received_data = request.data.decode('ascii').split(' ')
+        sender, receiver, = received_data[0], received_data[1]
+        message = ' '.join(received_data[2:])
+
         print(f"sender: {sender}\nreceiver: {receiver}\nmessage: {message}")
 
         db().send_message(sender, receiver, message)
 
-        returned_message = { "message": message, "sender": sender, "receiver": receiver}
+        returned_message = {"message": message, "sender": sender, "receiver": receiver}
 
         return flask.Response(response=json.dumps(returned_message), status=201)
+
+
+@app.route('/load_messages', methods=["GET", "POST"])
+def load_messages():
+    if request.method == C.POST:
+        print("load message...")
+
+        received_data = request.data.decode('ascii').split(' ')
+        sender, receiver = received_data[0], received_data[1]
+        print(f"sender: {sender}\nreceiver: {receiver}")
+
+        list_of_dict_of_messages = db().load_chat(sender, receiver)
+        print(list_of_dict_of_messages)
+
+        lst_messages = []
+        for dict_item in list_of_dict_of_messages:
+            lst_messages.append({'message': dict_item['message'], 'sender': dict_item['sender']})
+
+        # print(lst_messages)
+        #
+        # list_messages = [dict_item['message'] for dict_item in list_of_dict_of_messages]
+        # print(list_messages)
+
+        return flask.Response(response=json.dumps(lst_messages), status=201)
 
 
 if __name__ == '__main__':
     app.run()
 # if __name__ == "__main__":
 #     app.run("localhost", 6969)
-

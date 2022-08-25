@@ -217,15 +217,15 @@
                             <input type="text" name="message" id="message"
                                    class="form-control myborder myinput mt-2"
                                    aria-describedby="usernameHelp" placeholder="Enter your message">
-                            <input type="text" id="sender" name="sender" >
-                            <input type="text" id="receiver" name="receiver">
+                            <input type="hidden" id="sender" name="sender" >
+                            <input type="hidden" id="receiver" name="receiver">
 
                             <input type="submit" name="send" id="send" value="Send"
                                    class="btn btn-secondary mybtn text-center mt-2">
                         </form>
                     </div>
 
-                    <h3 id="sent-message" class="text-dark"></h3>
+                    <div id="sent-message" class="text-dark left-text-align"></div>
 
                     <div id="result" class="text-center text-dark mb-5"></div>
                     <div id="display-image"></div>

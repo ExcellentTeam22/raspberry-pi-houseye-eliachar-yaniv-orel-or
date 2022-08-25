@@ -129,19 +129,42 @@ const myModule = (() => {
 
         console.log(querySelect('#sender').value)
         console.log(querySelect('#receiver').value)
+        console.log(querySelect('#message').value)
 
-        // form.append('sender', querySelect('#sender').value)
-        // form.append('receiver', querySelect('#receiver').value)
+        let sender = querySelect('#sender').value
+        let receiver = querySelect('#receiver').value
+        let message = querySelect('#message').value
 
         const resp = await fetch("http://127.0.0.1:5000/message", {
             method: "POST",
-            body: new FormData(form)
+            body: `${sender} ${receiver} ${message}`
         });
         const body = await resp.json();
         console.log(body)
-         querySelect('#chat').className = "d-none";
-        querySelect('#sent-message').innerHTML = `You sent: "${body["message"]}" to: ${body["receiver"]}`
+        querySelect('#chat').className = "d-none";
+        let divSentMsg = querySelect('#sent-message')
+        appendCardToHtml(divSentMsg,
+            `<h3 id="sent-message">You sent: "${body["message"]}" to: ${body["receiver"]}</h3>`)
+        // querySelect('#sent-message').innerHTML = `You sent: "${body["message"]}" to: ${body["receiver"]}`
+        await load_messages(event, body["sender"], body["receiver"], divSentMsg)
+    }
+    //--------------------------
+    const load_messages = async function (event, sender, receiver, where) {
+        console.log("load messages...")
+        console.log(sender)
 
+        const resp = await fetch("http://127.0.0.1:5000/load_messages", {
+            method: "POST",
+            body: `${sender} ${receiver}`
+        });
+        const body = await resp.json();
+        console.log(body)
+
+        body.forEach(item => {
+            console.log(item["message"])
+            console.log(item["sender"])
+            appendCardToHtml(where, `<p>${item["sender"]} >> "${item["message"]}"</p></br>`)
+        })
     }
 
     //--------------------------------------

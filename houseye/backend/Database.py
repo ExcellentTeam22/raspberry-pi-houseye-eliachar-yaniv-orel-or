@@ -162,8 +162,13 @@ class Database:
             .set({'last_message': message, 'receiver': sender})
 
     def load_chat(self, user1, user2):
-        chat_id = self.db.collection('Users').document(user1).collection('chats').where('receiver', '==', user2).get()[0].id
-        chat_ref = self.db.collection('Chats').document(chat_id).colection('conversation')
+        sender_id = self.db.collection('Users').where('username', '==', user1).get()[0].id
+        # receiver_id = self.db.collection('Users').where('username', '==', user2).get()[0].id
+        chat_id = self.db.collection('Users').document(sender_id).collection('chats').where('receiver', '==', user2).get()[0].id
+        chat_ref = self.db.collection('Chats').document(chat_id).collection('conversation').get()
+
+        # print(chat_ref)
+        # print(type(chat_ref))
         chat_messages = [user.to_dict() for user in chat_ref]
         return chat_messages
 
