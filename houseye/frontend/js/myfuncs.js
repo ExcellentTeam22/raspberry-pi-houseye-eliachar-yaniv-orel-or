@@ -81,6 +81,7 @@ const myModule = (() => {
         console.log("identify")
         event.preventDefault()
         let form = querySelect('#formIdentifyPost');
+        querySelect('#sent-message').innerHTML = ""
 
         const resp = await fetch("http://127.0.0.1:5000/identify", {
             method: "POST",
@@ -112,20 +113,16 @@ const myModule = (() => {
         console.log(`got: ${body["sender"]},  ${body["receiver"]}`)
 
         if (body["sender"] === sender && body["receiver"] === receiver) {
-            console.log(`in if..`)
             let div_chat = querySelect('#chat')
             div_chat.className = "d-block";
-
             querySelect('#sender').value = sender
             querySelect('#receiver').value = receiver
-            // appendCardToHtml(div_chat, createDiv(user.username, user.image, user.status))
         }
     }
     //---------------------------
     const send_message = async function (event) {
         console.log("send message...")
         event.preventDefault()
-        let form = querySelect('#formMessagePost');
 
         console.log(querySelect('#sender').value)
         console.log(querySelect('#receiver').value)
@@ -143,10 +140,14 @@ const myModule = (() => {
         console.log(body)
         querySelect('#chat').className = "d-none";
         let divSentMsg = querySelect('#sent-message')
+        divSentMsg.innerHTML = ""
         appendCardToHtml(divSentMsg,
             `<h3 id="sent-message">You sent: "${body["message"]}" to: ${body["receiver"]}</h3>`)
-        // querySelect('#sent-message').innerHTML = `You sent: "${body["message"]}" to: ${body["receiver"]}`
         await load_messages(event, body["sender"], body["receiver"], divSentMsg)
+
+        clearInput('sender')
+        clearInput('receiver')
+        clearInput('message')
     }
     //--------------------------
     const load_messages = async function (event, sender, receiver, where) {
@@ -161,9 +162,8 @@ const myModule = (() => {
         console.log(body)
 
         body.forEach(item => {
-            console.log(item["message"])
-            console.log(item["sender"])
-            appendCardToHtml(where, `<p>${item["sender"]} >> "${item["message"]}"</p></br>`)
+            appendCardToHtml(where, `<p>${item["sender"]} >> "${item["message"]}"</br>
+                                             << ${item["date"]}</p>`)
         })
     }
 
@@ -177,14 +177,14 @@ const myModule = (() => {
     //----------------------------------
     const chatWith = function (btn) {
         const id = btn.target.parentElement.getElementsByTagName('h3')[0].innerHTML;
-        console.log(id)
-
         querySelect('#receiver').value = id
         querySelect('#identify-div').className = 'd-block';
+        querySelect('#sent-message').innerHTML = ""
     }
 
     const createDiv = (username, image_path, status) => {
-        return `
+        if (status === "In") {
+            return `
             <div>
                <div class="card border border-5 rounded-3 mb-2 left-text-align" style="width: 27.5rem;">
                  <div class="card-body">
@@ -194,27 +194,19 @@ const myModule = (() => {
                   </div>
                 </div>
             </div>`;
+        }
+        return `
+            <div>
+               <div class="card border border-5 rounded-3 mb-2 left-text-align" style="width: 27.5rem;">
+                 <div class="card-body">
+                    <h3 class="card-text">${username}</h3>
+                    <h3 class="card-text text-danger">${status}</h3>
+                    <button id="${username}" class="btn btn-info ml-2 mr-2">Chat</button>
+                  </div>
+                </div>
+            </div>`;
     }
     /** @returns {string} - return a div that includes a card with an image and its details */
-        // const createDiv = () => {
-        //     return `
-        //     <div>
-        //        <div class="card  border border-5 rounded-3  mb-2" style="width: 18rem;">
-        //         <img src=${this.image_src} class="card-img-top" alt="...">
-        //          <div class="card-body">
-        //             <p class="card-text">${this.id}</p>
-        //             <p class="card-text">Earth date: ${this.date}</p>
-        //             <p class="card-text">Sol: ${this.sol}</p>
-        //             <p class="card-text">Camera: ${this.camera}</p>
-        //             <p class="card-text">Mission: ${this.mission}</p>
-        //             <button class="btn btn-info ml-2 mr-2">Save</button>
-        //             <a href=${this.image_src} target="_blank">
-        //                <button class="btn btn-primary ml-2 mr-2">Full size</button>
-        //             </a>
-        //           </div>
-        //         </div>
-        //     </div>`;
-        // }
         //----------------------------------
     const appendCardToHtml = (where, div) => {
             where.insertAdjacentHTML('beforeend', div);
@@ -266,11 +258,9 @@ const myModule = (() => {
     }
     //-----------------------------
     /** clear the outputs of the DOM */
-    const clearOutput = function () {
-        querySelect('#imagesOutput1').innerHTML = '';
-        querySelect('#imagesOutput2').innerHTML = '';
-        querySelect('#imagesOutput3').innerHTML = '';
-        querySelect('#warning').className = "row-fluid d-none";
+    const clearInput = function (id) {
+        querySelect(`#${id}`).value = '';
+
     }
 
     return {
@@ -285,7 +275,6 @@ const myModule = (() => {
         querySelect: querySelect,
         setAttr: setAttr,
         resetErrors: resetErrors,
-        clearOutput: clearOutput
     }
 })();
 

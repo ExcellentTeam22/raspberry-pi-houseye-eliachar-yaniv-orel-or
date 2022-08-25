@@ -127,18 +127,12 @@ def load_messages():
         print(f"sender: {sender}\nreceiver: {receiver}")
 
         list_of_dict_of_messages = db().load_chat(sender, receiver)
-        print(list_of_dict_of_messages)
+        list_of_dict_of_messages = sorted(list_of_dict_of_messages, key=lambda x: x['date'], reverse=True)
 
-        lst_messages = []
-        for dict_item in list_of_dict_of_messages:
-            lst_messages.append({'message': dict_item['message'], 'sender': dict_item['sender']})
+        list_messages = [{'message': dict_item['message'], 'sender': dict_item['sender'], 'date': dict_item['date']}
+                         for dict_item in list_of_dict_of_messages]
 
-        # print(lst_messages)
-        #
-        # list_messages = [dict_item['message'] for dict_item in list_of_dict_of_messages]
-        # print(list_messages)
-
-        return flask.Response(response=json.dumps(lst_messages), status=201)
+        return flask.Response(response=json.dumps(list_messages), status=201)
 
 
 if __name__ == '__main__':

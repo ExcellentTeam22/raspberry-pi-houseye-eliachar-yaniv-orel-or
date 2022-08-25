@@ -5,6 +5,8 @@ from firebase_admin import credentials
 from firebase_admin import firestore
 from firebase_admin import storage
 
+from datetime import datetime
+
 """
 This class represents a DataBase that holds all the information about coins that founds by the program.
 """
@@ -134,27 +136,32 @@ class Database:
         chat_ref = self.db.collection('Chats').add({'contacts': {'user_1': sender, 'user_2': receiver}})
         query_ref = self.db.collection('Users').where('username', '==', sender).get()[0].id
 
+        now = datetime.now()
+        current_time = now.strftime("%H:%M:%S")
+
         self.db.collection('Users').document(query_ref).collection('chats').document(chat_ref[1].id) \
             .set({'last_message': '',
-                  'created_time': '00:00',
+                  'created_time': current_time,
                   'receiver': receiver})
 
         query_ref = self.db.collection('Users').where('username', '==', receiver).get()[0].id
         self.db.collection('Users').document(query_ref).collection('chats').document(chat_ref[1].id) \
             .set({'last_message': '',
-                  'created_time': '00:00',
+                  'created_time': current_time,
                   'receiver': sender})
 
     def send_message(self, sender, receiver, message):
         sender_id = self.db.collection('Users').where('username', '==', sender).get()[0].id
         receiver_id = self.db.collection('Users').where('username', '==', receiver).get()[0].id
-
         chat_id = self.db.collection('Users').document(sender_id).collection('chats').where('receiver', '==', receiver).get()[0].id
 
+        now = datetime.now()
+        current_time = now.strftime("%H:%M:%S")
+
         self.db.collection('Chats').document(chat_id).collection('conversation').add({'message': message,
-                                                 'sender': sender,
-                                                 'receiver': receiver,
-                                                 'date': '00:00'})
+                                                                                      'sender': sender,
+                                                                                      'receiver': receiver,
+                                                                                      'date': current_time})
 
         self.db.collection('Users').document(sender_id).collection('chats').document(chat_id) \
             .set({'last_message': message, 'receiver': receiver})
@@ -163,12 +170,8 @@ class Database:
 
     def load_chat(self, user1, user2):
         sender_id = self.db.collection('Users').where('username', '==', user1).get()[0].id
-        # receiver_id = self.db.collection('Users').where('username', '==', user2).get()[0].id
         chat_id = self.db.collection('Users').document(sender_id).collection('chats').where('receiver', '==', user2).get()[0].id
         chat_ref = self.db.collection('Chats').document(chat_id).collection('conversation').get()
-
-        # print(chat_ref)
-        # print(type(chat_ref))
         chat_messages = [user.to_dict() for user in chat_ref]
         return chat_messages
 
