@@ -129,7 +129,7 @@
                     </div>
 
                     <button id="show-users-btn" class="button style3" type="button">Show All Members</button>
-                      <div class="col-md-12 ">
+                    <div class="col-md-12 ">
                         <div class="login-or ">
                             <hr class="hr-or">
                             <span class="span-or">or</span>
@@ -193,9 +193,42 @@
                 </div>
 
                 <div id="users-show" class="d-none">
-                      <button id="back" class="button style2 mb-4 mt-5" type="button">Go Back</button>
-                     <div id="result" class="text-center text-dark mb-5"></div>
-                        <div id="display-image"></div>
+                    <button id="back" class="button style2 mb-4 mt-5" type="button">Go Back</button>
+                    <div id="identify-div" class="d-none">
+                        <form action="http://127.0.0.1:5000/identify" method="post" id="formIdentifyPost" name="login"
+                              enctype="multipart/form-data">
+
+                            <label class="h5 text-dark">Identify yourself</label>
+                            <input type="text" name="sender" id="sender"
+                                   class="form-control myborder myinput mt-2"
+                                   aria-describedby="usernameHelp" placeholder="Enter your username">
+                            <input type="hidden" id="receiver" name="receiver">
+                            <div class="text-danger errormessage mb-2"></div>
+                            <input type="submit" name="identify" id="identify" value="Identify"
+                                   class="btn btn-secondary mybtn text-center ">
+                        </form>
+                    </div>
+
+                    <div id="chat" class="d-none">
+                        <form action="http://127.0.0.1:5000/message" method="post" id="formMessagePost" name="login"
+                              enctype="multipart/form-data">
+
+                            <label class="h5 text-dark">Type tour message</label>
+                            <input type="text" name="message" id="message"
+                                   class="form-control myborder myinput mt-2"
+                                   aria-describedby="usernameHelp" placeholder="Enter your message">
+                            <input type="text" id="sender" name="sender" >
+                            <input type="text" id="receiver" name="receiver">
+
+                            <input type="submit" name="send" id="send" value="Send"
+                                   class="btn btn-secondary mybtn text-center mt-2">
+                        </form>
+                    </div>
+
+                    <h3 id="sent-message" class="text-dark"></h3>
+
+                    <div id="result" class="text-center text-dark mb-5"></div>
+                    <div id="display-image"></div>
                 </div>
 
             </div>

@@ -63,10 +63,10 @@ class Database:
         try:
             query_ref = self.db.collection('Users').where('username', '==', user_name).get()
             doc = query_ref[0].to_dict()
+            return doc
 
         except Exception as e:
-            return e.args
-        return doc
+            return False
 
     def add_image(self, image_file):
         """
@@ -132,27 +132,38 @@ class Database:
 
     def create_chat(self, sender, receiver):
         chat_ref = self.db.collection('Chats').add({'contacts': {'user_1': sender, 'user_2': receiver}})
-        self.db.collection('Users').where('username', '==', sender).collection('chats').document(chat_ref.id) \
-            .add({'last_message': '',
-                  'created_time': '00:00'})
-        self.db.collection('Users').where('username', '==', receiver).collection('chats').document(chat_ref.id) \
-            .add({'last_message': '',
-                  'created_time': '00:00'})
+        query_ref = self.db.collection('Users').where('username', '==', sender).get()[0].id
+
+        self.db.collection('Users').document(query_ref).collection('chats').document(chat_ref[1].id) \
+            .set({'last_message': '',
+                  'created_time': '00:00',
+                  'receiver': receiver})
+
+        query_ref = self.db.collection('Users').where('username', '==', receiver).get()[0].id
+        self.db.collection('Users').document(query_ref).collection('chats').document(chat_ref[1].id) \
+            .set({'last_message': '',
+                  'created_time': '00:00',
+                  'receiver': sender})
 
     def send_message(self, sender, receiver, message):
-        chat_ref = self.db.collection('Chats').where('contacts', '==', {'user_1': sender, 'user_2': receiver})
+        sender_id = self.db.collection('Users').where('username', '==', sender).get()[0].id
+        receiver_id = self.db.collection('Users').where('username', '==', receiver).get()[0].id
 
-        chat_ref.collection('conversation').add({'message': message,
+        chat_id = self.db.collection('Users').document(sender_id).collection('chats').where('receiver', '==', receiver).get()[0].id
+
+        self.db.collection('Chats').document(chat_id).collection('conversation').add({'message': message,
                                                  'sender': sender,
                                                  'receiver': receiver,
                                                  'date': '00:00'})
-        self.db.collection('Users').where('username', '==', sender).collection('chats').document(chat_ref.id) \
-            .set({'last_message': message})
-        self.db.collection('Users').where('username', '==', receiver).collection('chats').document(chat_ref.id) \
-            .set({'last_message': message})
+
+        self.db.collection('Users').document(sender_id).collection('chats').document(chat_id) \
+            .set({'last_message': message, 'receiver': receiver})
+        self.db.collection('Users').document(receiver_id).collection('chats').document(chat_id) \
+            .set({'last_message': message, 'receiver': sender})
 
     def load_chat(self, user1, user2):
-        chat_ref = self.db.collection('Chats').where('contacts', '==', {'user_1': user1, 'user_2': user2})
+        chat_id = self.db.collection('Users').document(user1).collection('chats').where('receiver', '==', user2).get()[0].id
+        chat_ref = self.db.collection('Chats').document(chat_id).colection('conversation')
         chat_messages = [user.to_dict() for user in chat_ref]
         return chat_messages
 
