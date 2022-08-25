@@ -26,7 +26,7 @@
 <div class="text-center">
     <nav class="navbar navbar-expand-xl navbar-dark bg-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">HomeFace</a>
+            <a class="navbar-brand" href="#">HomeEye</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
                     aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -93,18 +93,10 @@
 
                         <li class="nav-item  ms-auto ml-auto">
                         <span>
-<!--                            <a href="mailto:efeig15@gmail.com"class="nav-link  ms-auto pb-2" tabindex="-1">-->
-                            <!--                                <i class="fa fa-envelope" aria-hidden="true"></i>-->
-                            <!--                             efeig15@gmail.com</a>-->
                         </span>
                         </li>
 
                         <li class="nav-item  ms-auto ml-auto">
-                            <!--                        <span>-->
-                            <!--                            <a href="tel:058-7272372" class="nav-link  ms-auto pb-2" tabindex="-1">-->
-                            <!--                                <i class="fa fa-phone" aria-hidden="true"> </i>-->
-                            <!--                             058-7272372</a>-->
-                            <!--                        </span>-->
                         </li>
                     </ul>
                 </div>
@@ -118,92 +110,127 @@
             <div class="col-3" style="background-color: #6c82c8"></div>
 
             <div class="d-grid gap-2 col-6 mx-auto ">
-                <div class="text-center">
-                    <img src="images/face.jfif" class="img-fluid" style="max-width: 100%; height: auto;">
-                    <h3 class="text-success mt-4">Tap to scan your face</h3>
 
-                    <img src="images/down.gif">
-                </div>
-                <button id="scanbtn" class="button style" type="button">Scan</button>
-                <!--                <button id="scanbtn" class="btn btn-primary mt-5" type="button">Scan</button>-->
-                <div class="col-md-12 ">
-                    <div class="login-or ">
-                        <hr class="hr-or">
-                        <span class="span-or">or</span>
+                <div id="main-page" class="d-block">
+
+                    <div class="text-center">
+                        <img src="images/face.jfif" class="img-fluid" style="max-width: 100%; height: auto;">
+                        <h3 class="text-success mt-4">Tap to scan your face</h3>
+
+                        <img src="images/down.gif">
                     </div>
-                </div>
-                <button id="adduser" class="button style2 mb-4" type="button">Add New Member</button>
-       <!--
-                {#                <div>This is simple test to get data from a backend</div>#}
-                {#                <div><span>Last update: </span><span id="time-container"></span></div>#}
-{#                <button id="users">Get user data</button>#}
-{#                <p class="text-dark" id="result-container"></p>#}-->
+                    <button id="scanbtn" class="button style" type="button">Scan</button>
+                    <!--                <button id="scanbtn" class="btn btn-primary mt-5" type="button">Scan</button>-->
+                    <div class="col-md-12 ">
+                        <div class="login-or ">
+                            <hr class="hr-or">
+                            <span class="span-or">or</span>
+                        </div>
+                    </div>
 
+                    <button id="show-users-btn" class="button style3" type="button">Show All Members</button>
+                    <div class="col-md-12 ">
+                        <div class="login-or ">
+                            <hr class="hr-or">
+                            <span class="span-or">or</span>
+                        </div>
+                    </div>
+                    <button id="adduser" class="button style2 mb-4" type="button">Add New Member</button>
 
-                <div id="form" class="d-none">
-                    <div class="myform form border border-primary border-3  mt-4 mb-4 "
-                         style="background-color: #e3f2fd;">
+                    <a href="#form" id="open"></a>
 
-                        <h3 class="text-dark">Add new member</h3>
+                    <div id="form" class="d-none">
+                        <div class="myform form border border-primary border-3  mt-4 mb-4 "
+                             style="background-color: #e3f2fd;">
 
-                        <img src="https://static.wixstatic.com/media/9c808c_f900904c3241435e8866bbd5072c00d4~mv2.gif"
-                             class="card-img-top myborder imgGif center " alt="...">
+                            <h3 class="text-dark">Add new member</h3>
 
-                        <form method="post" id="formPost" name="login">
-                            <div class="form-group left-text-align">
-                                <label for="username" class="text-dark left-text-align">Username</label>
-                                <!--                                    <span class="star text-danger left-text-align">*</span>-->
-                                <input type="text" name="username" id="username"
-                                       class="form-control myborder myinput mb-2 mt-2"
-                                       aria-describedby="usernameHelp" placeholder="Enter your name here">
-                                <!--                                    <div class="text-danger errormessage"><%= emailError %></div>-->
-                            </div>
+                            <img src="https://static.wixstatic.com/media/9c808c_f900904c3241435e8866bbd5072c00d4~mv2.gif"
+                                 class="card-img-top myborder imgGif center " alt="...">
 
-                            <div class="form-group">
-                                <p class="text-center text-dark"><i>Scan your face</i></p>
+                            <form action="http://127.0.0.1:5000/form" method="post" id="formPost" name="login"
+                                  enctype="multipart/form-data">
+                                <div class="form-group left-text-align">
+                                    <label for="username" class="text-dark left-text-align">Username</label>
+                                    <!--                                    <span class="star text-danger left-text-align">*</span>-->
+                                    <input type="text" name="username" id="username"
+                                           class="form-control myborder myinput mb-2 mt-2"
+                                           aria-describedby="usernameHelp" placeholder="Enter your name here">
+                                    <!--              <div class="text-danger errormessage"><%= emailError %></div>-->
+                                </div>
 
-                                <div class="col-md-12 text-center ">
+                                <div class="form-group">
+                                    <p class="text-center text-dark"><i>Scan your face</i></p>
+
+                                    <div class="col-md-12 text-center ">
                                     <span class="spinner-grow spinner-grow-sm bg-primary" role="status"
                                           aria-hidden="true"></span>
-
-                                    <form action="/form">
-                                        <label for="img">Select image:</label>
-                                        <input  class=" btn btn-block mybtn btn-primary w-100 button style"
-                                                type="file" id="img" name="img" accept="image/*">
-                                        <input type="submit">
-                                    </form>
-
-{#                                    <button id="scanbtn" class=" btn btn-block mybtn btn-primary w-100 button style"#}
-{#                                            type="button">Scan#}
-{#                                    </button>#}
-                                </div>
-                                <div class="col-md-12 ">
-                                    <div class="login-or ">
-                                        <hr class="hr-or">
-                                        <span class="span-or">or</span>
+                                        <label for="img" class="text-dark">Select image:</label>
+                                        <input class="text-dark" type="file" id="image" name="image" accept="image/*">
                                     </div>
                                 </div>
-                            </div>
 
-                            <div class="form-group">
-                                <p class="text-center text-dark"><i>Do you want to register?</i></p>
-                            </div>
-                            <div class="col-md-12 mb-3">
-                                <p class="text-center text-dark">
-                                    <input type="submit" name="register" id="register" value="Register"
-                                           class="btn btn-secondary btn-block mybtn text-center w-100">
-                                </p>
-                                <p class="text-dark" id="sent-data-container"></p>
-                            </div>
-                            <div class="col-md-12 mb-3">
-                                <p class="text-center text-dark">
-                                    <a href="#" id="cancel"
-                                       class="signupBtn btn btn-outline-danger btn-block mybtn text-center w-100">Cancel</a>
-                                </p>
-                            </div>
+                                <div class="col-md-12 mb-3">
+                                    <p class="text-center text-dark">
+                                        <input type="submit" name="register" id="register" value="Register"
+                                               class="btn btn-secondary btn-block mybtn text-center w-100">
+                                    </p>
+                                    <p class="text-dark" id="sent-data-container"></p>
+
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    <p class="text-center text-dark">
+                                        <a href="#" id="cancel"
+                                           class="signupBtn btn btn-outline-danger btn-block mybtn text-center w-100">Cancel</a>
+                                    </p>
+
+                                    <div id="display-image"></div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div id="users-show" class="d-none">
+                    <button id="back" class="button style2 mb-4 mt-5" type="button">Go Back</button>
+                    <div id="identify-div" class="d-none">
+                        <form action="http://127.0.0.1:5000/identify" method="post" id="formIdentifyPost" name="login"
+                              enctype="multipart/form-data">
+
+                            <label class="h5 text-dark">Identify yourself</label>
+                            <input type="text" name="sender" id="sender"
+                                   class="form-control myborder myinput mt-2"
+                                   aria-describedby="usernameHelp" placeholder="Enter your username">
+                            <input type="hidden" id="receiver" name="receiver">
+                            <div class="text-danger errormessage mb-2"></div>
+                            <input type="submit" name="identify" id="identify" value="Identify"
+                                   class="btn btn-secondary mybtn text-center ">
                         </form>
                     </div>
+
+                    <div id="chat" class="d-none">
+                        <form action="http://127.0.0.1:5000/message" method="post" id="formMessagePost" name="login"
+                              enctype="multipart/form-data">
+
+                            <label class="h5 text-dark">Type tour message</label>
+                            <input type="text" name="message" id="message"
+                                   class="form-control myborder myinput mt-2"
+                                   aria-describedby="usernameHelp" placeholder="Enter your message">
+                            <input type="text" id="sender" name="sender" >
+                            <input type="text" id="receiver" name="receiver">
+
+                            <input type="submit" name="send" id="send" value="Send"
+                                   class="btn btn-secondary mybtn text-center mt-2">
+                        </form>
+                    </div>
+
+                    <h3 id="sent-message" class="text-dark"></h3>
+
+                    <div id="result" class="text-center text-dark mb-5"></div>
+                    <div id="display-image"></div>
                 </div>
+
             </div>
             <div class="col-3" style="background-color: #6c82c8"></div>
         </div>

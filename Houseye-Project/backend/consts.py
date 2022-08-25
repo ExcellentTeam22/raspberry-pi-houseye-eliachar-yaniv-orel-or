@@ -1,4 +1,0 @@
-
-
-USERNAME = 'username'
-IMAGE = 'image'

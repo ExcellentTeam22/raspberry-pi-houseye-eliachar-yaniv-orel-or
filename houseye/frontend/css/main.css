@@ -170,7 +170,7 @@ p {
 }
 
 h1, h2, h3, h4, h5, h6 {
-    color: #fff;
+    /*color: #fff;*/
     font-weight: 400;
     line-height: 1.5;
     margin: 0 0 1em 0;
@@ -2413,6 +2413,11 @@ form .error {
 }
 
 
-
+#display-image {
+    width: 375px;
+    height: 211px;
+    background-position: center;
+    background-size: cover;
+}
 
 /*}*/
