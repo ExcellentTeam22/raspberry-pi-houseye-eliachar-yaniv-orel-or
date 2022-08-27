@@ -18,7 +18,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const reader = new FileReader()
         reader.addEventListener("load", () => {
             uploaded_image = reader.result
-            myModule.querySelect('#display-image').style.backgroundImage = `url(${uploaded_image})`
+            let display = myModule.querySelect('#display-image');
+            display.className = "d-block mb-4 center-text-align";
+            display.style.backgroundImage = `url(${uploaded_image})`
 
         });
         reader.readAsDataURL(this.files[0])
@@ -29,10 +31,16 @@ document.addEventListener('DOMContentLoaded', function () {
 //-----------------------------------
 const myModule = (() => {
 
+    /**
+     * Scan your face with raspberry pi camera
+     */
     const scan = function () {
         console.log("scan")
     }
 //----------------------------
+    /**
+     * Showing form to add new member.
+     */
     const adduser = function () {
         console.log("adduser")
         let form = querySelect('#form')
@@ -40,12 +48,24 @@ const myModule = (() => {
         querySelect('#open').click();
     }
 //----------------------------
+    /**
+     * Cancel the addition of new member and reset the form.
+     */
     const cancel = function () {
         console.log("cancel")
         let form = querySelect('#form')
         form.className = 'd-none'
+
+        querySelect('#display-image').className = "d-none";
+        querySelect('#formPost').reset()
     }
     //------------------------------
+    /**
+     * Asynchronous function. Get a form action and send it to the server. The form contains a username and
+     * an image uploaded by the user.
+     * @param event - the event of submission of the form.
+     * @returns {Promise<void>}
+     */
     const register = async function (event) {
         console.log("register")
         event.preventDefault()
@@ -57,8 +77,17 @@ const myModule = (() => {
         });
         const body = await resp.json();
         console.log(body)
+        querySelect('#display-image').className = "d-none";
+        form.reset()
     }
     //----------------------------
+    /**
+     * Asynchronous function. Send a request in order to get all the users saved in the database in the server
+     * side. The wait for response from the server in the form of an array of objects which each object
+     * has a username attribute, an image path and a status says if the user is in the house or not.
+     * The show the results in the dom with a button allowing to chat chat with each user.
+     * @returns {Promise<void>}
+     */
     const show_users = async function () {
         querySelect('#main-page').className = "d-none";
         querySelect('#users-show').className = "d-block";
@@ -76,11 +105,17 @@ const myModule = (() => {
 
         body.forEach(user => {
             appendCardToHtml(result_div, createDiv(user.username, user.image, user.status))
-
         });
         addListeners()
     }
     //------------------------------
+    /**
+     * Asynchronous function. Get a form action in order to identify the sender of the message. If the user
+     * doesnt exist the response from the server will be 202 and will ask the user to re-enter a valid
+     * existing username, and if the user exist will show the sender a place to enter his message and to send it.
+     * @param event - the event of submission of the form.
+     * @returns {Promise<void>}
+     */
     const identify = async function (event) {
         console.log("identify")
         event.preventDefault()
@@ -100,14 +135,24 @@ const myModule = (() => {
             let receiver = querySelect('#receiver').value
             console.log(`receiver: ${receiver}`)
             querySelect('#identify-div').className = 'd-none';
-            await doChat(event, body, receiver);
+            await doChat(event, body, receiver, form);
         }
     }
 
     //-----------------------------
-    const doChat = async function (event, sender, receiver) {
+    /**
+     * Asynchronous function. Get a valid sender and a valid receiver and the form with the message sent by the
+     * sender to the user the send the form to the server and wait for response. At that point the server
+     * should create a chat between the 2 users if the chat doesnt exist yet. If get in the response the
+     * sender and the receiver - saves the values in the dom in hidden inputs.
+     * @param event - the event of submission of the form.
+     * @param sender - The sender of the message.
+     * @param receiver - The receiver of the message.
+     * @param form = the form.
+     * @returns {Promise<void>}
+     */
+    const doChat = async function (event, sender, receiver, form) {
         event.preventDefault()
-        let form = querySelect('#formIdentifyPost')
 
         const resp = await fetch("http://127.0.0.1:5000/chat", {
             method: "POST",
@@ -124,14 +169,16 @@ const myModule = (() => {
         }
     }
     //---------------------------
+    /**
+     * Asynchronous function. Get a form action in order to send message from a sender to a receiver then
+     * send to the server all the info in order to send the message. After getting the results will wait
+     * for "load_messages" function.
+     * @param event - The event of the form submission.
+     * @returns {Promise<void>}
+     */
     const send_message = async function (event) {
         console.log("send message...")
         event.preventDefault()
-
-        console.log(querySelect('#sender').value)
-        console.log(querySelect('#receiver').value)
-        console.log(querySelect('#message').value)
-
         let sender = querySelect('#sender').value
         let receiver = querySelect('#receiver').value
         let message = querySelect('#message').value
@@ -154,6 +201,16 @@ const myModule = (() => {
         clearInput('message')
     }
     //--------------------------
+    /**
+     * Get the sender, the receiver and an element in the dom to show the messages then send the sender
+     * and the receiver to the server in order to load the chat between them, and append each message with
+     * its date in the dom element.
+     * @param event
+     * @param sender
+     * @param receiver
+     * @param where
+     * @returns {Promise<void>}
+     */
     const load_messages = async function (event, sender, receiver, where) {
         console.log("load messages...")
 
@@ -171,22 +228,29 @@ const myModule = (() => {
     }
 
     //--------------------------------------
-    /** add listeners to the save buttons of the DOM inserted photos (every card has a such button) */
+    /**
+     * add listeners to the "Chat" button in order to chat with the specific user.
+     */
     const addListeners = function () {
         let buttons = document.getElementsByClassName("btn btn-info ml-2 mr-2");
         for (let btn of buttons)
             btn.addEventListener('click', chatWith);
     }
     //----------------------------------
+    /**
+     * When a "Chat" button is pressed - save the receiver which the sender wishes to send a message.
+     * @param btn - The button pressed.
+     */
     const chatWith = function (btn) {
-        const id = btn.target.parentElement.getElementsByTagName('h3')[0].innerHTML;
-        querySelect('#receiver').value = id
+        const receiver = btn.target.parentElement.getElementsByTagName('h3')[0].innerHTML;
+        querySelect('#receiver').value = receiver
         querySelect('#identify-div').className = 'd-block';
         querySelect('#sent-message').innerHTML = ""
         querySelect('#up').click();
         querySelect('#result').className = 'd-none';
         querySelect('#return').className = 'd-block';
     }
+    //---------------------------------
 
     const createDiv = (username, image_path, status) => {
         if (status === "In") {
