@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', function () {
     myModule.querySelect("#send").addEventListener("click", myModule.send_message);
 
     myModule.querySelect("#show-users-btn").addEventListener("click", myModule.show_users);
+    myModule.querySelect("#show-users").addEventListener("click", myModule.show_users);
     myModule.querySelect("#back").addEventListener("click", myModule.back);
 
     myModule.querySelect("#image").addEventListener("change", function () {
@@ -61,6 +62,9 @@ const myModule = (() => {
     const show_users = async function () {
         querySelect('#main-page').className = "d-none";
         querySelect('#users-show').className = "d-block";
+        querySelect('#result').className = 'd-block';
+        querySelect('#return').className = 'd-none';
+        querySelect('#sent-message').innerHTML = ""
 
         let result_div = querySelect('#result')
         result_div.innerHTML = '';
@@ -152,7 +156,6 @@ const myModule = (() => {
     //--------------------------
     const load_messages = async function (event, sender, receiver, where) {
         console.log("load messages...")
-        console.log(sender)
 
         const resp = await fetch("http://127.0.0.1:5000/load_messages", {
             method: "POST",
@@ -162,8 +165,8 @@ const myModule = (() => {
         console.log(body)
 
         body.forEach(item => {
-            appendCardToHtml(where, `<p>${item["sender"]} >> "${item["message"]}"</br>
-                                             << ${item["date"]}</p>`)
+            appendCardToHtml(where, `<p><b>${item["sender"]}</b> >> "${item["message"]}"</br>
+                                             << <i>${item["date"]}</i></p>`)
         })
     }
 
@@ -180,6 +183,9 @@ const myModule = (() => {
         querySelect('#receiver').value = id
         querySelect('#identify-div').className = 'd-block';
         querySelect('#sent-message').innerHTML = ""
+        querySelect('#up').click();
+        querySelect('#result').className = 'd-none';
+        querySelect('#return').className = 'd-block';
     }
 
     const createDiv = (username, image_path, status) => {
@@ -260,7 +266,6 @@ const myModule = (() => {
     /** clear the outputs of the DOM */
     const clearInput = function (id) {
         querySelect(`#${id}`).value = '';
-
     }
 
     return {

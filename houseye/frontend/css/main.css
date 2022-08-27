@@ -157,7 +157,7 @@ a:hover {
 }
 
 strong, b {
-    color: #fff;
+    /*color: #fff;*/
     font-weight: 400;
 }
 

@@ -1,5 +1,4 @@
 
-
 USERNAME = 'username'
 IMAGE = 'image'
 IMAGE_PATH = 'image_path'
@@ -9,3 +8,4 @@ GET = "GET"
 SENDER = 'sender'
 RECEIVER = 'receiver'
 MESSAGE = 'message'
+DATE = 'date'

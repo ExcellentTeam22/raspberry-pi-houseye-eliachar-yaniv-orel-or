@@ -137,7 +137,7 @@ class Database:
         query_ref = self.db.collection('Users').where('username', '==', sender).get()[0].id
 
         now = datetime.now()
-        current_time = now.strftime("%H:%M:%S")
+        current_time = now.strftime("%d/%m/%Y %H:%M:%S")
 
         self.db.collection('Users').document(query_ref).collection('chats').document(chat_ref[1].id) \
             .set({'last_message': '',
@@ -156,7 +156,7 @@ class Database:
         chat_id = self.db.collection('Users').document(sender_id).collection('chats').where('receiver', '==', receiver).get()[0].id
 
         now = datetime.now()
-        current_time = now.strftime("%H:%M:%S")
+        current_time = now.strftime("%d/%m/%Y %H:%M:%S")
 
         self.db.collection('Chats').document(chat_id).collection('conversation').add({'message': message,
                                                                                       'sender': sender,

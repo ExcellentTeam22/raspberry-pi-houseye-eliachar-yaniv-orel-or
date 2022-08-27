@@ -1,9 +1,7 @@
 import json
 import flask
 from flask import Flask, request
-import data as data
 from flask_cors import CORS
-import pandas as pd
 import consts as C
 from PIL import Image
 from Database import Database as db
@@ -12,56 +10,32 @@ app = Flask(__name__)
 CORS(app)
 
 
-@app.route('/')
-def hello_world():
-    return 'Hello World!'
-
-
-@app.route('/users', methods=["GET", "POST"])
-def users():
-    if request.method == C.GET:
-        print("users endpoint reached...")
-        return flask.jsonify(data.df_users)
-
-
 def add_user_to_cloud_db(username: str, image_path: str):
     db().add_user(username, image_path)
     db().add_image(image_path)
 
 
-def insert_to_dataframe(received_data, image_path):
-    temp_df = pd.DataFrame(columns=[C.USERNAME, C.IMAGE_PATH, C.IMAGE])
-    temp_df.at[len(data.df_users.index), C.USERNAME] = received_data[C.USERNAME]
-    temp_df.at[len(data.df_users.index), C.IMAGE_PATH] = image_path
-    temp_df.at[len(data.df_users.index), C.IMAGE] = received_data[C.IMAGE]
-
-    data.df_users = pd.concat([data.df_users, temp_df], ignore_index=True)
-    print(data.df_users)
+@app.route('/')
+def hello_world():
+    return 'Hello World!'
 
 
 @app.route('/form', methods=["GET", "POST"])
 def handle_form():
     print("form...")
-
     if request.method == C.POST:
         username = request.form[C.USERNAME]
         img = Image.open(request.files[C.IMAGE])
         image_path = C.BASE_PATH_TO_SAVE_IMAGE + username + '.png'
         img.save(image_path)
-
-        received_data = {C.USERNAME: f"{username}", C.IMAGE: f"{img}"}
         return_data = {C.USERNAME: f"{username}", C.IMAGE: f"{img}"}
-
         add_user_to_cloud_db(username, image_path)
-        insert_to_dataframe(received_data, image_path)
-
         return flask.Response(response=json.dumps(return_data), status=201)
 
 
 @app.route('/get_all_users', methods=["GET", "POST"])
 def get_all_users():
     if request.method == C.POST:
-        print("get all users route...")
         print(db().get_all_users())
         return flask.jsonify(db().get_all_users())
 
@@ -70,17 +44,11 @@ def get_all_users():
 def identify():
     if request.method == C.POST:
         print("identify...")
-        username = request.form[C.SENDER]
-        print(username)
-
         try:
+            username = request.form[C.SENDER]
             user = db().get_user(username)
-            print(user)
-            if user:
-                return flask.jsonify(username)
-            else:
-                return flask.Response(response=json.dumps('No such user'), status=202)
-
+            return flask.jsonify(username) if user \
+                else flask.Response(response=json.dumps('No such user'), status=202)
         except Exception as e:
             return e.args
 
@@ -89,31 +57,20 @@ def identify():
 def do_chat():
     if request.method == C.POST:
         print("let's chat...")
-
         sender, receiver = request.form[C.SENDER], request.form[C.RECEIVER]
-        print(f"sender: {sender}\nreceiver: {receiver}")
         return_data = {C.SENDER: sender, C.RECEIVER: receiver}
-
         db().create_chat(sender, receiver)
-
         return flask.Response(response=json.dumps(return_data), status=201)
 
 
 @app.route('/message', methods=["GET", "POST"])
-def message():
+def messages():
     if request.method == C.POST:
         print("message...")
-
         received_data = request.data.decode('ascii').split(' ')
-        sender, receiver, = received_data[0], received_data[1]
-        message = ' '.join(received_data[2:])
-
-        print(f"sender: {sender}\nreceiver: {receiver}\nmessage: {message}")
-
+        sender, receiver, message = received_data[0], received_data[1], ' '.join(received_data[2:])
         db().send_message(sender, receiver, message)
-
-        returned_message = {"message": message, "sender": sender, "receiver": receiver}
-
+        returned_message = {C.MESSAGE: message, C.SENDER: sender, C.RECEIVER: receiver}
         return flask.Response(response=json.dumps(returned_message), status=201)
 
 
@@ -121,18 +78,15 @@ def message():
 def load_messages():
     if request.method == C.POST:
         print("load message...")
-
         received_data = request.data.decode('ascii').split(' ')
         sender, receiver = received_data[0], received_data[1]
-        print(f"sender: {sender}\nreceiver: {receiver}")
-
         list_of_dict_of_messages = db().load_chat(sender, receiver)
-        list_of_dict_of_messages = sorted(list_of_dict_of_messages, key=lambda x: x['date'], reverse=True)
-
-        list_messages = [{'message': dict_item['message'], 'sender': dict_item['sender'], 'date': dict_item['date']}
+        print(list_of_dict_of_messages)
+        list_of_dict_of_messages = sorted(list_of_dict_of_messages, key=lambda x: x[C.DATE], reverse=True)
+        print(list_of_dict_of_messages)
+        returned_data = [{C.MESSAGE: dict_item[C.MESSAGE], C.SENDER: dict_item[C.SENDER], C.DATE: dict_item[C.DATE]}
                          for dict_item in list_of_dict_of_messages]
-
-        return flask.Response(response=json.dumps(list_messages), status=201)
+        return flask.Response(response=json.dumps(returned_data), status=201)
 
 
 if __name__ == '__main__':

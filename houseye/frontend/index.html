@@ -193,6 +193,7 @@
                 </div>
 
                 <div id="users-show" class="d-none">
+                    <a href="#users-show" id="up"></a>
                     <button id="back" class="button style2 mb-4 mt-5" type="button">Go Back</button>
                     <div id="identify-div" class="d-none">
                         <form action="http://127.0.0.1:5000/identify" method="post" id="formIdentifyPost" name="login"
@@ -217,7 +218,7 @@
                             <input type="text" name="message" id="message"
                                    class="form-control myborder myinput mt-2"
                                    aria-describedby="usernameHelp" placeholder="Enter your message">
-                            <input type="hidden" id="sender" name="sender" >
+                            <input type="hidden" id="sender" name="sender">
                             <input type="hidden" id="receiver" name="receiver">
 
                             <input type="submit" name="send" id="send" value="Send"
@@ -228,6 +229,10 @@
                     <div id="sent-message" class="text-dark left-text-align"></div>
 
                     <div id="result" class="text-center text-dark mb-5"></div>
+
+                    <div id="return" class="d-none">
+                        <button id="show-users" class="button style3" type="button">Return</button>
+                    </div>
                     <div id="display-image"></div>
                 </div>
 
