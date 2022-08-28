@@ -5,20 +5,21 @@ from flask_cors import CORS
 import consts as C
 from PIL import Image
 from Database import Database as db
-
+from twilio.rest import Client
 
 app = Flask(__name__)
 CORS(app)
 
 
-def add_user_to_cloud_db(username: str, image_path: str) -> None:
+def add_user_to_cloud_db(username: str,  cellphone: str, image_path: str) -> None:
     """
     Get the username and the path of the saved image (saved in the project in the form of:
     "backend/resources/<username>.png" and add the user in the firebase cloud database.
     :param username: The username.
+    :param cellphone: The cellphone of the username.
     :param image_path: The Path of the saved image.
     """
-    db().add_user(username, image_path)
+    db().add_user(username, cellphone, image_path)
     db().add_image(image_path)
 
 
@@ -36,20 +37,26 @@ def handle_form() -> json:
     """
     print("form...")
     username = request.form[C.USERNAME]
+    cell_number = request.form[C.TEL]
+    whole_number = '+972' + cell_number[1:] if cell_number[0] == '0' else '+972' + cell_number
     img = Image.open(request.files[C.IMAGE])
     image_path = C.BASE_PATH_TO_SAVE_IMAGE + username + '.png'
     img.save(image_path)
     return_data = {C.USERNAME: f"{username}", C.IMAGE: f"{img}"}
-    add_user_to_cloud_db(username, image_path)
+    add_user_to_cloud_db(username, whole_number, image_path)
     return flask.Response(response=json.dumps(return_data), status=201)
 
 
 @app.route('/check_image', methods=["GET", "POST"])
 def check_image_in_database():
-    # if request.method == C.POST:
+    if request.method == C.POST:
+        pass
         # house_images = reco("Resources/or_2.jpeg", db().get_images())
         # if house_images.is_person_authorize():
-    print("check_image")
+        #     print("authorized")
+        # else:
+        #     send_whatsapp_alert_message()
+
     db().update_user(status="In", username=db().find_user_by_image("backend/resources/orel.png"))
     return flask.Response("User upload inside house")
 
@@ -63,6 +70,16 @@ def get_all_users() -> json:
     return flask.jsonify(db().get_all_users())
 
 
+def send_whatsapp_alert_message():
+    client = Client(C.ACCOUNT_SID, C.AUTH_TOKEN)
+    for cellphone in db().get_cellphones():
+        client.messages.create(
+            from_='whatsapp:+14155238886',
+            body='There is unauthorised person in your property, trying to reach your house!',
+            to=f"whatsapp:{cellphone}"
+        )
+
+
 @app.route('/identify', methods=["POST"])
 def identify() -> json:
     """
@@ -74,9 +91,16 @@ def identify() -> json:
     try:
         print("identify...")
         username = request.form[C.SENDER]
-        user = db().get_user(username)
-        return flask.jsonify(username) if user \
-            else flask.Response(response=json.dumps('No such user'), status=202)
+        found_user = db().get_user(username)
+
+        if found_user:
+            return flask.jsonify(username)
+        else:
+            send_whatsapp_alert_message()
+            return flask.Response(response=json.dumps('No such user'), status=202)
+
+        # return flask.jsonify(username) if user \
+        #     else flask.Response(response=json.dumps('No such user'), status=202)
     except Exception as e:
         return e.args
 

@@ -23,16 +23,20 @@ class Database:
         self.db = firestore.client()
         self.bucket = storage.bucket()
 
-    def add_user(self, user_name, image_path):
+    def add_user(self, user_name, cellphone, image_path):
         """
         Add new user to database.
         :param user_name: The username of the user
+        :param cellphone: The cellphone of the user
         :param image_path: Image path for the image
         :return:
         """
         try:
             if not self.db.collection('Users').where('username', '==', user_name).get():
-                self.db.collection('Users').add({'username': user_name, 'image': image_path, 'status': 'out'})
+                self.db.collection('Users').add({'username': user_name,
+                                                 'cellphone': cellphone,
+                                                 'image': image_path,
+                                                 'status': 'out'})
             else:
                 return "User is already inside"
         except Exception as e:
@@ -66,9 +70,15 @@ class Database:
             query_ref = self.db.collection('Users').where('username', '==', user_name).get()
             doc = query_ref[0].to_dict()
             return doc
-
         except Exception as e:
             return False
+
+    def get_cellphones(self):
+        """
+        Get all cellphone numbers in the database.
+        :return: List of cellphones.
+        """
+        return [user['cellphone'] for user in self.get_all_users()]
 
     def add_image(self, image_file):
         """
