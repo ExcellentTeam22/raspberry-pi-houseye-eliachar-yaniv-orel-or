@@ -6,6 +6,7 @@ import consts as C
 from PIL import Image
 from Database import Database as db
 
+
 app = Flask(__name__)
 CORS(app)
 
@@ -41,6 +42,16 @@ def handle_form() -> json:
     return_data = {C.USERNAME: f"{username}", C.IMAGE: f"{img}"}
     add_user_to_cloud_db(username, image_path)
     return flask.Response(response=json.dumps(return_data), status=201)
+
+
+@app.route('/check_image', methods=["GET", "POST"])
+def check_image_in_database():
+    # if request.method == C.POST:
+        # house_images = reco("Resources/or_2.jpeg", db().get_images())
+        # if house_images.is_person_authorize():
+    print("check_image")
+    db().update_user(status="In", username=db().find_user_by_image("backend/resources/orel.png"))
+    return flask.Response("User upload inside house")
 
 
 @app.route('/get_all_users', methods=["POST"])
