@@ -5,11 +5,12 @@ from flask_cors import CORS
 import consts as C
 from PIL import Image
 from Database import Database as db
-from recognition import Recognition as reco
+# from recognition import Recognition as reco
 from twilio.rest import Client
 
 app = Flask(__name__)
 CORS(app)
+
 
 def send_whatsapp_alert_message():
     client = Client(C.ACCOUNT_SID, C.AUTH_TOKEN)
@@ -20,53 +21,49 @@ def send_whatsapp_alert_message():
             to=f"whatsapp:{cellphone}")
 
 
-@app.route('/', methods=["GET", "POST"])
-def hello_world():  # put application's code here
-    house_images = reco("face_detect.jpeg", db().get_images())
-    if house_images.is_person_authorize():
-        username = db().find_user_by_image(house_images.match_image())
-        cellphone = db().find_cell_by_user(username)
-
-        db().update_user(status="In", cellphone=cellphone, username=username, image=house_images.match_image())
-
-        return flask.Response("User upload inside house")
-    send_whatsapp_alert_message()
-    return flask.Response(status=301)
+@app.route('/')
+def hello_world():
+    return 'Hello World!'
 
 
 def add_user_to_cloud_db(username: str, cellphone: str, image_path: str):
+    """
+     Get the username and the path of the saved image (saved in the project in the form of:
+     "backend/resources/<username>.png" and add the user in the firebase cloud database.
+     :param username: The username.
+     :param cellphone: The cellphone of the username.
+     :param image_path: The Path of the saved image.
+     """
     db().add_user(username, cellphone, image_path)
     db().add_image(image_path)
 
 
-@app.route('/form', methods=["GET", "POST"])
+@app.route('/form', methods=["POST"])
 def handle_form():
+    """
+       Get the form as a POST request the save the new username and the image uploaded in the project, then save
+       the username and the path of the image in the db firebase cloud.
+       :return: Response to the client.
+       """
     print("form...")
-
-    if request.method == C.POST:
-        username = request.form[C.USERNAME]
-        cell_number = request.form['tel']
-        whole_number = '+972' + cell_number[1:] if cell_number[0] == '0' else '+972' + cell_number
-        img = Image.open(request.files[C.IMAGE])
-        image_path = C.BASE_PATH_TO_SAVE_IMAGE + username + '.png'
-        img.save(image_path)
-
-        received_data = {C.USERNAME: f"{username}", C.IMAGE: f"{img}"}
-        return_data = {C.USERNAME: f"{username}", C.IMAGE: f"{img}"}
-
-        db().delete_user('yanivson', 'url()')
-
-        add_user_to_cloud_db(username, whole_number, image_path)
-
-        return flask.Response(response=json.dumps(return_data), status=201)
+    username = request.form[C.USERNAME]
+    cell_number = request.form[C.TEL]
+    whole_number = '+972' + cell_number[1:] if cell_number[0] == '0' else '+972' + cell_number
+    img = Image.open(request.files[C.IMAGE])
+    image_path = C.BASE_PATH_TO_SAVE_IMAGE + username + '.png'
+    img.save(image_path)
+    return_data = {C.USERNAME: f"{username}", C.IMAGE: f"{img}"}
+    add_user_to_cloud_db(username, whole_number, image_path)
+    return flask.Response(response=json.dumps(return_data), status=201)
 
 
-@app.route('/get_all_users', methods=["GET", "POST"])
-def get_all_users():
-    if request.method == C.POST:
-        print("get all users route...")
-        print(db().get_all_users())
-        return flask.jsonify(db().get_all_users())
+@app.route('/get_all_users', methods=["POST"])
+def get_all_users() -> json:
+    """
+    Get a POST request in order to return all the users saved in the cloud database.
+    :return: All the users.
+    """
+    return flask.jsonify(db().get_all_users())
 
 
 @app.route('/identify', methods=["POST"])
@@ -87,7 +84,6 @@ def identify() -> json:
         else:
             send_whatsapp_alert_message()
             return flask.Response(response=json.dumps('No such user'), status=202)
-
         # return flask.jsonify(username) if user \
         #     else flask.Response(response=json.dumps('No such user'), status=202)
     except Exception as e:
@@ -110,11 +106,11 @@ def do_chat() -> json:
 @app.route('/message', methods=["POST"])
 def messages():
     """
-    Get a POST request which contains a string which the first word is the sender, the second word is the
-    receiver and the rest of the sting is the massage that sender want to send to the receiver. The decompose
-    the string and send the message which will be saved in thd db with the time the message is sent.
-    :return: The message, the sender and the receiver as json.
-    """
+     Get a POST request which contains a string which the first word is the sender, the second word is the
+     receiver and the rest of the sting is the massage that sender want to send to the receiver. The decompose
+     the string and send the message which will be saved in thd db with the time the message is sent.
+     :return: The message, the sender and the receiver as json.
+     """
     print("message...")
     received_data = request.data.decode('ascii').split(' ')
     sender, receiver, message = received_data[0], received_data[1], ' '.join(received_data[2:])

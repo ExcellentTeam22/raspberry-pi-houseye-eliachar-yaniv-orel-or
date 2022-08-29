@@ -36,6 +36,7 @@ const myModule = (() => {
      */
     const scan = function () {
         console.log("scan")
+        querySelect('#instructions').className = "d-none";
     }
 //----------------------------
     /**
@@ -43,8 +44,7 @@ const myModule = (() => {
      */
     const adduser = function () {
         console.log("adduser")
-        let form = querySelect('#form')
-        form.className = 'd-block'
+        querySelect('#form').className = 'd-block';
         querySelect('#open').click();
     }
 //----------------------------
@@ -78,7 +78,7 @@ const myModule = (() => {
         });
         const body = await resp.json();
         console.log(body)
-        querySelect('#instructions').className = "d-block";
+        querySelect('#instructions').className = "d-block alert alert-success";
         querySelect('#display-image').className = "d-none";
         form.reset()
     }
@@ -96,6 +96,8 @@ const myModule = (() => {
         querySelect('#result').className = 'd-block';
         querySelect('#return').className = 'd-none';
         querySelect('#sent-message').innerHTML = ""
+        querySelect('#instructions').className = "d-none";
+         querySelect('#form').className = 'd-none';
 
         let result_div = querySelect('#result')
         result_div.innerHTML = '';
@@ -348,52 +350,3 @@ const myModule = (() => {
         resetErrors: resetErrors,
     }
 })();
-
-
-// console.log("Sending data: " + username + " + " + image);
-// xhr = getXmlHttpRequestObject();
-// xhr.onreadystatechange = sendDataCallback;
-// xhr.open("POST", "http://127.0.0.1:5000/form", true);
-// xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-// xhr.send(JSON.stringify({
-//     "username": username,
-//     "image": image
-// }));
-
-
-// function sendDataCallback() {
-//     // Check response is ready or not
-//     if (xhr.readyState == 4 && xhr.status == 201) {
-//         console.log("Data creation response received!");
-//         let dataDiv = document.getElementById('sent-data-container');
-//         // Set current data text
-//         dataDiv.innerHTML = xhr.responseText;
-//     }
-// }
-
-//
-// var xhr = null;
-// const getXmlHttpRequestObject = function () {
-//     if (!xhr) {
-//         // Create a new XMLHttpRequest object
-//         xhr = new XMLHttpRequest();
-//     }
-//     return xhr;
-// };
-//
-// function dataCallback() {
-//     if (xhr.readyState == 4 && xhr.status == 200) {
-//         console.log("User data received!");
-//         let dataDiv = document.getElementById('result-container');
-//         dataDiv.innerHTML = xhr.responseText;
-//         console.log(xhr.responseText)
-//     }
-// }
-//
-// function getUsers() {
-//     console.log("Get users...");
-//     xhr = getXmlHttpRequestObject();
-//     xhr.onreadystatechange = dataCallback;
-//     xhr.open("GET", "http://127.0.0.1:5000/users", true);
-//     xhr.send(null);
-// }

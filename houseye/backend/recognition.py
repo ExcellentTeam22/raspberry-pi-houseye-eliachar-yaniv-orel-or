@@ -1,9 +1,9 @@
 import base64
 
-import face_recognition
+# import face_recognition
 from PIL import Image
 import numpy as np
-import cv2
+# import cv2
 import flask
 import requests
 import datetime

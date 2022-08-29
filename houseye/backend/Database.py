@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from singletonDecorator import singleton
 import firebase_admin
 
@@ -13,7 +15,7 @@ This class represents a DataBase that holds all the information about coins that
 @singleton
 class Database:
     def __init__(self):
-        self.cred = credentials.Certificate("ServiceAccountKey.json")
+        self.cred = credentials.Certificate("backend/ServiceAccountKey.json")
         firebase_admin.initialize_app(self.cred, {
             'storageBucket': 'houseeye-ea111.appspot.com'
         })
@@ -73,11 +75,10 @@ class Database:
         """
         try:
             query_ref = self.db.collection('Users').where('username', '==', user_name).get()
-            doc = query_ref[0].to_dict()
-
+            doc = query_ref[0].to_dict()['username']
+            return doc
         except Exception as e:
-            return e.args
-        return doc
+            return False
 
     def add_image(self, image_file):
         """
@@ -126,8 +127,6 @@ class Database:
             return cell
         except Exception as e:
             return e.args
-        
-
 
     def get_images(self):
         try:
@@ -153,27 +152,44 @@ class Database:
 
     def create_chat(self, sender, receiver):
         chat_ref = self.db.collection('Chats').add({'contacts': {'user_1': sender, 'user_2': receiver}})
-        self.db.collection('Users').where('username', '==', sender).collection('chats').document(chat_ref.id) \
-            .add({'last_message': '',
-                  'created_time': '00:00'})
-        self.db.collection('Users').where('username', '==', receiver).collection('chats').document(chat_ref.id) \
-            .add({'last_message': '',
-                  'created_time': '00:00'})
+        query_ref = self.db.collection('Users').where('username', '==', sender).get()[0].id
+
+        now = datetime.now()
+        current_time = now.strftime("%d/%m/%Y %H:%M:%S")
+
+        self.db.collection('Users').document(query_ref).collection('chats').document(chat_ref[1].id) \
+            .set({'last_message': '',
+                  'created_time': current_time,
+                  'receiver': receiver})
+
+        query_ref = self.db.collection('Users').where('username', '==', receiver).get()[0].id
+        self.db.collection('Users').document(query_ref).collection('chats').document(chat_ref[1].id) \
+            .set({'last_message': '',
+                  'created_time': current_time,
+                  'receiver': sender})
 
     def send_message(self, sender, receiver, message):
-        chat_ref = self.db.collection('Chats').where('contacts', '==', {'user_1': sender, 'user_2': receiver})
+        sender_id = self.db.collection('Users').where('username', '==', sender).get()[0].id
+        receiver_id = self.db.collection('Users').where('username', '==', receiver).get()[0].id
+        chat_id = self.db.collection('Users').document(sender_id).collection('chats').where('receiver', '==', receiver).get()[0].id
 
-        chat_ref.collection('conversation').add({'message': message,
-                                                 'sender': sender,
-                                                 'receiver': receiver,
-                                                 'date': '00:00'})
-        self.db.collection('Users').where('username', '==', sender).collection('chats').document(chat_ref.id) \
-            .set({'last_message': message})
-        self.db.collection('Users').where('username', '==', receiver).collection('chats').document(chat_ref.id) \
-            .set({'last_message': message})
+        now = datetime.now()
+        current_time = now.strftime("%d/%m/%Y %H:%M:%S")
+
+        self.db.collection('Chats').document(chat_id).collection('conversation').add({'message': message,
+                                                                                      'sender': sender,
+                                                                                      'receiver': receiver,
+                                                                                      'date': current_time})
+
+        self.db.collection('Users').document(sender_id).collection('chats').document(chat_id) \
+            .set({'last_message': message, 'receiver': receiver})
+        self.db.collection('Users').document(receiver_id).collection('chats').document(chat_id) \
+            .set({'last_message': message, 'receiver': sender})
 
     def load_chat(self, user1, user2):
-        chat_ref = self.db.collection('Chats').where('contacts', '==', {'user_1': user1, 'user_2': user2})
+        sender_id = self.db.collection('Users').where('username', '==', user1).get()[0].id
+        chat_id = self.db.collection('Users').document(sender_id).collection('chats').where('receiver', '==', user2).get()[0].id
+        chat_ref = self.db.collection('Chats').document(chat_id).collection('conversation').get()
         chat_messages = [user.to_dict() for user in chat_ref]
         return chat_messages
 
