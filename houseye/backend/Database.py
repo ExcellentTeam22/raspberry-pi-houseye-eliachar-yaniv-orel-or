@@ -33,8 +33,8 @@ class Database:
             if not self.db.collection('Users').where('username', '==', user_name).get():
                 self.db.collection('Users').add({'username': user_name, 
                                                  'cellphone': cellphone,
-                                                 'image': image_path, 
-                                                 'status': 'out'})
+                                                 'image': image_path,
+                                                 'status': 'Out'})
             else:
                 return "User is already inside"
         except Exception as e:

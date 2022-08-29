@@ -54,8 +54,9 @@ const myModule = (() => {
     const cancel = function () {
         console.log("cancel")
         let form = querySelect('#form')
-        form.className = 'd-none'
+        form.className = 'd-none';
 
+        querySelect('#instructions').className = "d-none";
         querySelect('#display-image').className = "d-none";
         querySelect('#formPost').reset()
     }
@@ -77,6 +78,7 @@ const myModule = (() => {
         });
         const body = await resp.json();
         console.log(body)
+        querySelect('#instructions').className = "d-block";
         querySelect('#display-image').className = "d-none";
         form.reset()
     }
