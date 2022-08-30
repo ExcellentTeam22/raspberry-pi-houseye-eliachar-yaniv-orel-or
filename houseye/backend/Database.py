@@ -1,7 +1,8 @@
 from datetime import datetime
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Union
 
 from google.api_core.page_iterator import Iterator
+from google.cloud.storage import Blob
 
 from singletonDecorator import singleton
 import firebase_admin
@@ -120,7 +121,7 @@ class Database:
             return e.args
         return username
 
-    def find_cell_by_user(self, username: str) -> tuple[Any, ...] | Any:
+    def find_cell_by_user(self, username: str) -> Union[tuple[Any, ...], Any]:
         """
         Find user cellphone number.
         :param username: Username that we want his number.
@@ -133,7 +134,7 @@ class Database:
         except Exception as e:
             return e.args
 
-    def get_images(self) -> Iterator | tuple[Any, ...]:
+    def get_images(self) -> Union[Iterator, tuple[Any, ...]]:
         """
         Get all images of the house.
         :return: Images files
@@ -144,8 +145,7 @@ class Database:
         except Exception as e:
             return e.args
 
-
-    def update_user(self, **kwargs) -> tuple[Any, ...] | str:
+    def update_user(self, **kwargs) -> Union[tuple[Any, ...], str]:
         """
         Update user field in database.
         :param kwargs: Fields to update
@@ -156,9 +156,9 @@ class Database:
             for doc in query_ref:
                 doc_id = doc.id
                 self.db.collection("Users").document(doc_id).set(kwargs)
+                return "Updated successfully"
         except Exception as e:
             return e.args
-        return "Updated successfully"
 
     def get_all_users(self):
         """
@@ -204,9 +204,7 @@ class Database:
         """
         sender_id = self.db.collection('Users').where('username', '==', sender).get()[0].id
         receiver_id = self.db.collection('Users').where('username', '==', receiver).get()[0].id
-        chat_id = \
-        self.db.collection('Users').document(sender_id).collection('chats').where('receiver', '==', receiver).get()[
-            0].id
+        chat_id = self.db.collection('Users').document(sender_id).collection('chats').where('receiver', '==', receiver).get()[0].id
 
         now = datetime.now()
         current_time = now.strftime("%d/%m/%Y %H:%M:%S")
@@ -229,8 +227,7 @@ class Database:
         :return : All messages in chat conversation.
         """
         sender_id = self.db.collection('Users').where('username', '==', user1).get()[0].id
-        chat_id = \
-        self.db.collection('Users').document(sender_id).collection('chats').where('receiver', '==', user2).get()[0].id
+        chat_id = self.db.collection('Users').document(sender_id).collection('chats').where('receiver', '==', user2).get()[0].id
         chat_ref = self.db.collection('Chats').document(chat_id).collection('conversation').get()
         chat_messages = [user.to_dict() for user in chat_ref]
         return chat_messages
