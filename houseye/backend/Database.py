@@ -1,4 +1,7 @@
 from datetime import datetime
+from typing import List, Dict, Any
+
+from google.api_core.page_iterator import Iterator
 
 from singletonDecorator import singleton
 import firebase_admin
@@ -7,13 +10,10 @@ from firebase_admin import credentials
 from firebase_admin import firestore
 from firebase_admin import storage
 
-"""
-This class represents a DataBase that holds all the information about coins that founds by the program.
-"""
-
 
 @singleton
 class Database:
+    """Connection between server to cloud database."""
     def __init__(self):
         self.cred = credentials.Certificate("backend/ServiceAccountKey.json")
         firebase_admin.initialize_app(self.cred, {
@@ -33,7 +33,7 @@ class Database:
         """
         try:
             if not self.db.collection('Users').where('username', '==', user_name).get():
-                self.db.collection('Users').add({'username': user_name, 
+                self.db.collection('Users').add({'username': user_name,
                                                  'cellphone': cellphone,
                                                  'image': image_path,
                                                  'status': 'Out'})
@@ -65,7 +65,7 @@ class Database:
         Get all cellphone numbers in the database.
         :return: List of cellphones.
         """
-        return [user['cellphone'] for user in self.get_all_users()] 
+        return [user['cellphone'] for user in self.get_all_users()]
 
     def get_user(self, user_name):
         """
@@ -120,7 +120,12 @@ class Database:
             return e.args
         return username
 
-    def find_cell_by_user(self, username):
+    def find_cell_by_user(self, username: str) -> tuple[Any, ...] | Any:
+        """
+        Find user cellphone number.
+        :param username: Username that we want his number.
+        :return: Cellphone number of the user.
+        """
         try:
             query_ref = self.db.collection('Users').where('username', '==', username).get()
             cell = query_ref[0].to_dict()['cellphone']
@@ -128,14 +133,24 @@ class Database:
         except Exception as e:
             return e.args
 
-    def get_images(self):
+    def get_images(self) -> Iterator | tuple[Any, ...]:
+        """
+        Get all images of the house.
+        :return: Images files
+        """
         try:
             files = self.bucket.list_blobs()
+            return files
         except Exception as e:
             return e.args
-        return files
 
-    def update_user(self, **kwargs):
+
+    def update_user(self, **kwargs) -> tuple[Any, ...] | str:
+        """
+        Update user field in database.
+        :param kwargs: Fields to update
+        :return: Status of update.
+        """
         try:
             query_ref = self.db.collection('Users').where('username', '==', kwargs['username']).get()
             for doc in query_ref:
@@ -146,11 +161,23 @@ class Database:
         return "Updated successfully"
 
     def get_all_users(self):
-        query = self.db.collection('Users').get()
-        users_details = [user.to_dict() for user in query]
-        return users_details
+        """
+        Get all user from database.
+        :return: User registered from database.
+        """
+        try:
+            query = self.db.collection('Users').get()
+            users_details = [user.to_dict() for user in query]
+            return users_details
+        except Exception as e:
+            return e.args
 
-    def create_chat(self, sender, receiver):
+    def create_chat(self, sender:str, receiver: str) -> None:
+        """
+        Create chat between two users give each user key for their chat table.
+        :param sender: The user who opened the chat.
+        :param receiver: The user that receive the message.
+        """
         chat_ref = self.db.collection('Chats').add({'contacts': {'user_1': sender, 'user_2': receiver}})
         query_ref = self.db.collection('Users').where('username', '==', sender).get()[0].id
 
@@ -168,10 +195,18 @@ class Database:
                   'created_time': current_time,
                   'receiver': sender})
 
-    def send_message(self, sender, receiver, message):
+    def send_message(self, sender: str, receiver: str, message: str)->None:
+        """
+        Send message between two users, adds message to their chat table.
+        :param sender: The user who send the message.
+        :param receiver: The user who receive the message.
+        :param message: The message sent.
+        """
         sender_id = self.db.collection('Users').where('username', '==', sender).get()[0].id
         receiver_id = self.db.collection('Users').where('username', '==', receiver).get()[0].id
-        chat_id = self.db.collection('Users').document(sender_id).collection('chats').where('receiver', '==', receiver).get()[0].id
+        chat_id = \
+        self.db.collection('Users').document(sender_id).collection('chats').where('receiver', '==', receiver).get()[
+            0].id
 
         now = datetime.now()
         current_time = now.strftime("%d/%m/%Y %H:%M:%S")
@@ -186,10 +221,16 @@ class Database:
         self.db.collection('Users').document(receiver_id).collection('chats').document(chat_id) \
             .set({'last_message': message, 'receiver': sender})
 
-    def load_chat(self, user1, user2):
+    def load_chat(self, user1: str, user2: str) -> List[Dict]:
+        """
+        Load conversation between two users.
+        :param user1: User 1
+        :param user2: User 2
+        :return : All messages in chat conversation.
+        """
         sender_id = self.db.collection('Users').where('username', '==', user1).get()[0].id
-        chat_id = self.db.collection('Users').document(sender_id).collection('chats').where('receiver', '==', user2).get()[0].id
+        chat_id = \
+        self.db.collection('Users').document(sender_id).collection('chats').where('receiver', '==', user2).get()[0].id
         chat_ref = self.db.collection('Chats').document(chat_id).collection('conversation').get()
         chat_messages = [user.to_dict() for user in chat_ref]
         return chat_messages
-
