@@ -93,7 +93,7 @@ body.is-loading *, body.is-loading *:before, body.is-loading *:after {
 /* Type */
 
 body, input, select, textarea {
-    color: rgba(255, 255, 255, 0.75);
+    /*color: rgba(255, 255, 255, 0.75);*/
     font-family: "Source Sans Pro", sans-serif;
     font-size: 14pt;
     font-weight: 300;
@@ -157,7 +157,7 @@ a:hover {
 }
 
 strong, b {
-    color: #fff;
+    /*color: #fff;*/
     font-weight: 400;
 }
 
@@ -170,7 +170,7 @@ p {
 }
 
 h1, h2, h3, h4, h5, h6 {
-    color: #fff;
+    /*color: #fff;*/
     font-weight: 400;
     line-height: 1.5;
     margin: 0 0 1em 0;
@@ -2413,6 +2413,11 @@ form .error {
 }
 
 
-
+#display-image {
+    width: 375px;
+    height: 211px;
+    background-position: center;
+    background-size: cover;
+}
 
 /*}*/

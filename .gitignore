@@ -6,7 +6,9 @@
 /dataSources.local.xml
 # Editor-based HTTP Client requests
 /httpRequests/
-
+#key
+/houseye/backend/ServiceAccountKey.json
+/houseye/Resources/*
 
 
 __pycache__/
