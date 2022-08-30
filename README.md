@@ -1,5 +1,7 @@
 # HousEye - Raspberry-Pi Project
   ### Creators: Eliachar Feig, Yaniv Sonino, Orel Aviad, Or Shahar
+  
+   #### Youtube Demo: [Click on Me](https://www.youtube.com/watch?v=vXjOUxHrgU0&ab_channel=%D7%90%D7%9C%D7%99%D7%A9%D7%A8%D7%A4%D7%99%D7%99%D7%92)
 
 ## Know your home at real-time with HousEye
 
@@ -20,9 +22,6 @@
           JavaScript, HTML, CSS
    ##### Linux:
           Raspberry-Pi, Python, OpenCV, Raspberry-Pi camera
-         
-### Youtube Demo:
-   [Click on Me](https://www.youtube.com/watch?v=vXjOUxHrgU0&ab_channel=%D7%90%D7%9C%D7%99%D7%A9%D7%A8%D7%A4%D7%99%D7%99%D7%92)
    
 
 
