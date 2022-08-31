@@ -121,7 +121,7 @@ class Database:
             return e.args
         return username
 
-    def find_cell_by_user(self, username: str) -> Union[tuple[Any, ...], Any]:
+    def find_cell_by_user(self, username: str) -> str:
         """
         Find user cellphone number.
         :param username: Username that we want his number.
@@ -134,7 +134,7 @@ class Database:
         except Exception as e:
             return e.args
 
-    def get_images(self) -> Union[Iterator, tuple[Any, ...]]:
+    def get_images(self) -> str:
         """
         Get all images of the house.
         :return: Images files
@@ -145,7 +145,7 @@ class Database:
         except Exception as e:
             return e.args
 
-    def update_user(self, **kwargs) -> Union[tuple[Any, ...], str]:
+    def update_user(self, **kwargs) -> str:
         """
         Update user field in database.
         :param kwargs: Fields to update
